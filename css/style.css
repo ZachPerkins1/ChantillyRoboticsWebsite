@@ -36,7 +36,12 @@ a:visited{
 }
 
 #subteams .desc {
-  width: 80%;
+  width: 60%;
+  margin-left: 5%;
+}
+
+#programming, #cad, #marketing, #electrical, #mechanical {
+  margin-left: 5%;
 }
 
 .image-info{
