@@ -2,6 +2,8 @@
 
 body{
   font-family:"Roboto Slab", serif;
+  background-color:black;
+  color: #ddd;
 }
 
 .subtitle{
@@ -32,4 +34,8 @@ body{
 .image-info{
   width:15%;
   vertical-align:top;
+}
+
+.wrapper{
+  text-align:center;
 }
