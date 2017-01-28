@@ -6,6 +6,14 @@ body{
   color: #ddd;
 }
 
+a{
+  color: #0FF;
+}
+
+a:visited{
+  color: #0FF;
+}
+
 .subtitle{
   text-align:center;
 }
