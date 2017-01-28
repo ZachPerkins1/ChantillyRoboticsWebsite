@@ -2,6 +2,16 @@
 
 body{
   font-family:"Roboto Slab", serif;
+  background-color:black;
+  color: #ddd;
+}
+
+a{
+  color: #0FF;
+}
+
+a:visited{
+  color: #fb3;
 }
 
 .subtitle{
@@ -26,7 +36,12 @@ body{
 }
 
 #subteams .desc {
-  width: 80%;
+  width: 60%;
+  margin-left: 5%;
+}
+
+#programming, #cad, #marketing, #electrical, #mechanical {
+  margin-left: 5%;
 }
 
 .image-info{
@@ -49,4 +64,8 @@ table {
 
 #mentor-table .mentor-desc {
   width: 25%;
+}
+
+.wrapper{
+  text-align:center;
 }
