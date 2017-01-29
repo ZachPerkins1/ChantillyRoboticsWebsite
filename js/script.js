@@ -7,6 +7,13 @@ $(document).ready(function(){
   //Note: The load functions will not load local files in Chrome, Internet Explorer, or Edge.
   //They should work when the files are remote hosted though.
   //If you want to see the header and footer loaded on local, use Firefox.
-  $("#header").load("header.html #header-body");
+  $("#header").load("header.html #header-body", function() {
+    $("#navbar a").each(function() {
+      if($(this).attr("href") == location.href.split("/").slice(-1)) {
+        $(this).addClass("active");
+        return false;
+      }
+    });
+  });
   $("#footer").load("footer.html #footer-body");
 });

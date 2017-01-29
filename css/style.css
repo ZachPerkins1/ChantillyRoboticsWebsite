@@ -52,3 +52,32 @@ a:visited{
 .wrapper{
   text-align:center;
 }
+
+#navbar {
+  text-align: center;
+}
+
+#navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#navbar li {
+  display: inline-block;
+  width: 30%;
+  border: 2px solid white;
+}
+
+#navbar a {
+  display: block;
+  color: #0ff;
+}
+
+#navbar a:hover {
+  background-color: gray;
+}
+
+#navbar .active {
+  background-color: gray;
+}
