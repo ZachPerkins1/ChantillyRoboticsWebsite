@@ -4,6 +4,7 @@ body{
   font-family:"Roboto Slab", serif;
   background-color:black;
   color: #ddd;
+  margin: 0;
 }
 
 a{
@@ -25,14 +26,11 @@ a:visited{
 }
 
 #content {
-  border: 4px solid black;
   padding: 1em;
 }
 
 .inline {
   display: inline-block;
-  border: 2px solid black;
-  padding: 0.25em;
 }
 
 #subteams .desc {
@@ -47,8 +45,52 @@ a:visited{
 .image-info{
   width:15%;
   vertical-align:top;
+  padding: 0.25em;
 }
 
 .wrapper{
   text-align:center;
+}
+
+#navbar {
+  text-align: center;
+}
+
+.line-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.line-list li {
+  display: inline-block;
+}
+
+#navbar li {
+  width: 30%;
+  border: 2px solid #ddd;
+}
+
+a.clickbutton {
+  display: block;
+  color: #0ff;
+  text-decoration: none;
+}
+
+#navbar a:hover {
+  background-color: gray;
+}
+
+#navbar .active {
+  background-color: gray;
+}
+
+#footer {
+  border-top: 2px solid gray;
+  background-color: #333;
+}
+
+#footer li {
+  border-right: 2px solid #bbb;
+  padding-right: 0.25em;
 }
