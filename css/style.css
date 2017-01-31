@@ -94,3 +94,8 @@ a.clickbutton {
   border-right: 2px solid #bbb;
   padding-right: 0.25em;
 }
+
+#countdown{
+  text-align:center;
+  font-size:2em;
+}
