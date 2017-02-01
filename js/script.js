@@ -16,4 +16,34 @@ $(document).ready(function(){
     });
   });
   $("#footer").load("footer.html #footer-body");
+  //TIMER STUFF//
+  var endDate = new Date("Feb 21, 2017 23:59:59").getTime();
+
+  //Do it once so it doesn't start empty
+  var currDate = new Date().getTime();
+  var distance = endDate-currDate;
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  $("#days").html(days);
+  $("#hours").html(hours);
+  $("#minutes").html(minutes);
+  $("#seconds").html(seconds);
+
+  var resetTime = setInterval(function(){
+    currDate = new Date().getTime();
+    distance = endDate-currDate;
+    days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    $("#days").html(days);
+    $("#hours").html(hours);
+    $("#minutes").html(minutes);
+    $("#seconds").html(seconds);
+
+  }, 1000); //Every second
 });
