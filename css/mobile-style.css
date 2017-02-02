@@ -36,22 +36,33 @@ a:visited{
 }
 
 #subteams .desc {
-  width: 60%;
-  margin-left: 5%;
+  width: 80%;
+  text-align:center;
+  padding-right:0;
+  float:right;
 }
 
-#programming, #cad, #marketing, #electrical, #mechanical {
-  margin-left: 5%;
-}
 
-.image-info{
-  width:15%;
+div.image-info{ /*Width is too narrow to allow inline on mobile/small screens*/
+  display:block;
+  width:100%;
   vertical-align:top;
 }
 
-.image-info img{
-  width:80%;
-  height:80%;
+div.image-info img{
+  width:20%; /*Maybe change these?*/
+  height:20%;
+  position:absolute;
+  left:10%;
+}
+
+img.image-info{
+  width:50%;
+  height:50%;
+  vertical-align:top;
+  display:block;
+  margin: auto;
+  text-align:center;
 }
 
 table {
