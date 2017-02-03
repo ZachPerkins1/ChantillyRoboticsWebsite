@@ -127,13 +127,6 @@ a.clickbutton {
 }
 
 .entry {
-    color: black;
-    background-color: #e2e2e2;
-    width: 512px;
-}
-
-.entry-dark {
-    color: black;
-    background-color: #bcbcbc;
-    width: 512px;
+    color: white;
+    background-color: #333;
 }
