@@ -68,8 +68,7 @@ a:visited{
 }
 
 #navbar li {
-  width: 30%;
-  border: 2px solid #ddd;
+  width: 11%;
 }
 
 a.clickbutton {
@@ -79,11 +78,12 @@ a.clickbutton {
 }
 
 #navbar a:hover {
-  background-color: gray;
+  color: #0ff;
+  border-bottom: 2px solid #0ff;
 }
 
 #navbar .active {
-  background-color: gray;
+  border-bottom: 2px solid #0ff;
 }
 
 #footer {
