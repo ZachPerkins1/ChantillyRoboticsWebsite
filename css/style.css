@@ -107,3 +107,10 @@ a.clickbutton {
   width: 40%;
   padding: 2em;
 }
+
+#image-spread {
+  text-align: center; /* For meanie images */
+  height: 36em;
+  border: 2px solid #ddd; /* Just so we can see the image border */
+  overflow: hidden;
+}
