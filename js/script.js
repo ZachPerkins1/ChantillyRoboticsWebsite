@@ -16,4 +16,40 @@ $(document).ready(function(){
     });
   });
   $("#footer").load("footer.html #footer-body");
+  //TIMER STUFF
+  function setCountdownTimer(end) {
+    let elapsed = end - new Date().getTime();
+    if(elapsed <= 0) {
+      $("#seconds").html("0s");
+      clearInterval(resetTime);
+      return;
+    }
+    let days = Math.floor(elapsed / (24 * 60 * 60 * 1000));
+    let hours = Math.floor((elapsed % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    let minutes = Math.floor((elapsed % (60 * 60 * 1000)) / (60 * 1000));
+    let seconds = Math.floor((elapsed % (60 * 1000)) / 1000);
+    $("#days").html(days + "d");
+    $("#hours").html(hours + "h");
+    $("#minutes").html(minutes + "m");
+    $("#seconds").html(seconds + "s");
+    //stop displaying unneeded units
+    if(days == 0) {
+      $("#days").html("");
+      if(hours == 0) {
+        $("#hours").html("");
+        if(minutes == 0) {
+          $("#minutes").html("");
+        }
+      }
+    }
+  }
+
+  var endDate = new Date("Feb 21, 2017 23:59:59").getTime();
+  //  new Date().getTime() + (3 * 1000) + 3000;
+
+  //Do it once so it doesn't start empty
+  setCountdownTimer(endDate);
+  var resetTime = setInterval(function(){
+    setCountdownTimer(endDate);
+  }, 1000); //Every second
 });

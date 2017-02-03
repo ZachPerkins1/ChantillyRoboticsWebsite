@@ -94,3 +94,23 @@ a.clickbutton {
   border-right: 2px solid #bbb;
   padding-right: 0.25em;
 }
+
+#countdown {
+  text-align: center;
+  font-size: 32pt;
+}
+
+#logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+  padding: 2em;
+}
+
+#image-spread {
+  text-align: center; /* For meanie images */
+  height: 36em;
+  border: 2px solid #ddd; /* Just so we can see the image border */
+  overflow: hidden;
+}
