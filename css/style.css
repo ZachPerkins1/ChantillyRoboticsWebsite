@@ -38,7 +38,8 @@ a:visited{
   margin-left: 5%;
 }
 
-#programming, #cad, #marketing, #electrical, #mechanical {
+/*why not use a class?*/
+#programming, #cad, #business, #pr, #electrical, #mechanical {
   margin-left: 5%;
 }
 
