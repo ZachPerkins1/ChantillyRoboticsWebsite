@@ -55,6 +55,7 @@ a:visited{
 
 #navbar {
   text-align: center;
+  font-size: 1.6em;
 }
 
 .line-list {
@@ -68,22 +69,22 @@ a:visited{
 }
 
 #navbar li {
-  width: 30%;
-  border: 2px solid #ddd;
+  width: 11%;
 }
 
 a.clickbutton {
   display: block;
-  color: #0ff;
+  color: #ddd;
   text-decoration: none;
 }
 
 #navbar a:hover {
-  background-color: gray;
+  color: #0ff;
+  border-bottom: 2px solid #0ff;
 }
 
 #navbar .active {
-  background-color: gray;
+  border-bottom: 2px solid #0ff;
 }
 
 #footer {
