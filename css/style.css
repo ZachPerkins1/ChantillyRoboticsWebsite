@@ -88,7 +88,7 @@ a.clickbutton {
 }
 
 #footer {
-  border-top: 2px solid gray;
+   border-top: 2px solid gray;
   background-color: #333;
 }
 
@@ -135,4 +135,8 @@ a.clickbutton {
 
 .outreach-desc {
   width: 65%;
+}
+
+.sponsor-list {
+  padding: 1.5em;
 }
