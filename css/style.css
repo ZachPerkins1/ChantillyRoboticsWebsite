@@ -133,6 +133,6 @@ a.clickbutton {
     background-color: #333;
 }
 
-.sponsor-list {
-padding: 1.5em;
+#sponsor-list li {
+  width: 30%;
 }
