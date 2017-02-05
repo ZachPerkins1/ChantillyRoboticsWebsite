@@ -12,7 +12,7 @@ $(document).ready(function(){
   //If you want to see the header and footer loaded on local, use Firefox.
   $("#header").load("header.html #header-body", function() {
     //Returns the rightmost file/directory name sans page anchor and queries
-    let page = location.href.split("/").slice(-1)[0].split(/#|\?/, 1)[0];
+    var page = location.href.split("/").slice(-1)[0].split(/#|\?/, 1)[0];
     if(page == "" || page == "612-Website"){ //Second case is if the page loaded is .../612-Website with no ending slash, just in case
       $("#navbar a[href='index.html']").addClass("active"); //Finds anchor element with reference to index.html
       return false; //No need to check the rest
@@ -27,16 +27,16 @@ $(document).ready(function(){
   $("#footer").load("footer.html #footer-body");
   //TIMER STUFF
   function setCountdownTimer(end) {
-    let elapsed = end - new Date().getTime();
+    var elapsed = end - new Date().getTime();
     if(elapsed <= 0) {
       $("#seconds").html("0s");
       clearInterval(resetTime);
       return;
     }
-    let days = Math.floor(elapsed / (24 * 60 * 60 * 1000));
-    let hours = Math.floor((elapsed % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-    let minutes = Math.floor((elapsed % (60 * 60 * 1000)) / (60 * 1000));
-    let seconds = Math.floor((elapsed % (60 * 1000)) / 1000);
+    var days = Math.floor(elapsed / (24 * 60 * 60 * 1000));
+    var hours = Math.floor((elapsed % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    var minutes = Math.floor((elapsed % (60 * 60 * 1000)) / (60 * 1000));
+    var seconds = Math.floor((elapsed % (60 * 1000)) / 1000);
     $("#days").html(days + "d");
     $("#hours").html(hours + "h");
     $("#minutes").html(minutes + "m");
