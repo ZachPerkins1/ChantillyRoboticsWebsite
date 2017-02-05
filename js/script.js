@@ -11,8 +11,8 @@ $(document).ready(function(){
   //They should work when the files are remote hosted though.
   //If you want to see the header and footer loaded on local, use Firefox.
   $("#header").load("header.html #header-body", function() {
-    //Returns the rightmost file/directory name sans page anchor
-    let page = location.href.split("/").slice(-1)[0].split("#", 1)[0];
+    //Returns the rightmost file/directory name sans page anchor and queries
+    let page = location.href.split("/").slice(-1)[0].split(/#|\?/, 1)[0];
     if(page == "" || page == "612-Website"){ //Second case is if the page loaded is .../612-Website with no ending slash, just in case
       $("#navbar a[href='index.html']").addClass("active"); //Finds anchor element with reference to index.html
       return false; //No need to check the rest
