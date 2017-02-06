@@ -4,6 +4,7 @@ body{
   font-family:"Roboto Slab", serif;
   background-color:black;
   color: #ddd;
+  margin: 0;
 }
 
 a{
@@ -25,14 +26,11 @@ a:visited{
 }
 
 #content {
-  border: 4px solid black;
   padding: 1em;
 }
 
 .inline {
   display: inline-block;
-  border: 2px solid black;
-  padding: 0.25em;
 }
 
 #subteams .desc {
@@ -40,13 +38,15 @@ a:visited{
   margin-left: 5%;
 }
 
-#programming, #cad, #marketing, #electrical, #mechanical {
+/*why not use a class?*/
+#programming, #cad, #business, #pr, #electrical, #mechanical {
   margin-left: 5%;
 }
 
 .image-info{
   width:15%;
   vertical-align:top;
+  padding: 0.25em;
 }
 
 .image-info img{
@@ -73,4 +73,90 @@ table {
 
 .wrapper{
   text-align:center;
+}
+
+#navbar {
+  text-align: center;
+  font-size: 1.6em;
+}
+
+.line-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.line-list li {
+  display: inline-block;
+}
+
+#navbar li {
+  width: 13%;
+}
+
+a.clickbutton {
+  display: block;
+  color: #ddd;
+  text-decoration: none;
+}
+
+#navbar a:hover {
+  color: #0ff;
+  border-bottom: 2px solid #0ff;
+}
+
+#navbar .active {
+  border-bottom: 2px solid #0ff;
+}
+
+#footer {
+   border-top: 2px solid gray;
+  background-color: #333;
+}
+
+#footer li {
+  border-right: 2px solid #bbb;
+  padding-right: 0.25em;
+}
+
+#countdown {
+  text-align: center;
+  font-size: 32pt;
+}
+
+#logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 35%;
+  padding: 2em;
+}
+
+#top-seconds {
+    height: 36em;
+    border: 2px solid #ddd; /* Just so we can see the image border */
+    overflow: hidden;
+}
+
+#image-spread {
+  text-align: center; /* For meanie images */
+}
+
+#events {
+  overflow-y:scroll;
+  height: 250px;
+  padding-left: 3px;
+}
+
+.entry {
+  color: white;
+  background-color: #333;
+}
+
+.outreach-desc {
+  width: 65%;
+}
+
+.sponsor-list {
+  padding: 1.5em;
 }
