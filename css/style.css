@@ -138,3 +138,7 @@ a.clickbutton {
 .sponsor-list {
   padding: 1.5em;
 }
+
+#contacts li {
+  text-align: center;
+}
