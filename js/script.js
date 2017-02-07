@@ -3,8 +3,8 @@ $(document).ready(function(){
     //Hide all subtitle contents at first
     $(".content-box").find("p").next().hide();
     //show contents when headers are clicked
-    $(".subtitle").click(function(){
-      $(this).next().slideToggle(300); //Goes inside the contentbox, finds all p's, get's the second (index 1)
+    $(".subtitle").click(function() {
+      $(this).next().slideToggle(300);
     });
   }
   //Note: The load functions will not load local files in Chrome, Internet Explorer, or Edge.
@@ -61,4 +61,25 @@ $(document).ready(function(){
   var resetTime = setInterval(function(){
     setCountdownTimer(endDate);
   }, 1000); //Every second
+  //end timer stuff
+  //
+  //put mobile-specific (or desktop-specific) code here
+  //
+  function onMobileChange(query) {
+    //mobile
+    if(query.matches) {
+      $("#outreach .text").hide();
+      $("#outreach h2").click(function() {
+        $(this).next().slideToggle(300);
+      });
+    //desktop
+    } else {
+      $("#outreach .text").show();
+      $("#outreach h2").off("click");
+    }
+  }
+  var media = window.matchMedia("screen and (max-width: 1000px)");
+  media.addListener(onMobileChange);
+  onMobileChange(media);
+  //end mobile/desktop specific code
 });

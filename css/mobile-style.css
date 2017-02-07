@@ -44,12 +44,12 @@ img {
   width: 48%;
 }
 
-.outreach-desc {
-  width: 100%;
+#outreach li {
+  display: block;
 }
 
-#outreach li {
-  margin-bottom: 1em;
+.outreach-desc {
+  width: 100%;
 }
 
 #sponsor-list li {
