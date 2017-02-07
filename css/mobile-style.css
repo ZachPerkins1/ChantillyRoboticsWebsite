@@ -51,3 +51,7 @@ img {
 #outreach li {
   margin-bottom: 1em;
 }
+
+#sponsor-list li {
+  width: 100%;
+}
