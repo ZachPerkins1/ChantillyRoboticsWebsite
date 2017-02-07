@@ -116,21 +116,23 @@ a.clickbutton {
     overflow: hidden;
 }
 
-/*TODO: enable table border*/
 #image-spread {
-  /*text-align: center; /* For meanie images */
-  width: 50%;
+  text-align: center; /* For meanie images */
 }
 
 #events {
-    overflow-y:scroll;
-    height: 450px;
-    padding-left: 3px;
+  overflow-y:scroll;
+  height: 250px;
+  padding-left: 3px;
 }
 
 .entry {
-    color: white;
-    background-color: #333;
+  color: white;
+  background-color: #333;
+}
+
+.outreach-desc {
+  width: 65%;
 }
 
 #sponsor-list li {
