@@ -20,7 +20,7 @@ a:visited{
 }
 
 .content-box{
-  border: 2px solid grey;
+  /*border: 2px solid grey;*/
   border-radius: 5px;
   margin-bottom:0.6%;
 }

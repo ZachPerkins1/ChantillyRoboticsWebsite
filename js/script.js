@@ -1,12 +1,12 @@
 $(document).ready(function(){
-  if($("#about-first").length!=0){ //So it only runs on the one page
+  /*if($("#about-first").length!=0){ //So it only runs on the one page
     //Hide all subtitle contents at first
     $(".content-box").find("p").next().hide();
     //show contents when headers are clicked
     $(".subtitle").click(function() {
       $(this).next().slideToggle(300);
     });
-  }
+  }*/
   //Note: The load functions will not load local files in Chrome, Internet Explorer, or Edge.
   //They should work when the files are remote hosted though.
   //If you want to see the header and footer loaded on local, use Firefox.
@@ -68,14 +68,16 @@ $(document).ready(function(){
   function onMobileChange(query) {
     //mobile
     if(query.matches) {
-      $("#outreach .text").hide();
-      $("#outreach h2").click(function() {
+      $(".subtitle").next().hide();
+      $(".subtitle").click(function() {
         $(this).next().slideToggle(300);
       });
+      $(".desktop-only").hide(); //permanently
     //desktop
     } else {
-      $("#outreach .text").show();
-      $("#outreach h2").off("click");
+      $(".subtitle").next().show();
+      $(".subtitle").off("click");
+      $(".desktop-only").show();
     }
   }
   var media = window.matchMedia("screen and (max-width: 1000px)");

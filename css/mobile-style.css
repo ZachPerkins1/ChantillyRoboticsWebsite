@@ -15,6 +15,10 @@ img {
   text-align: center;
 }
 
+.subtitle {
+  border-bottom: 2px solid #ddd;
+}
+
 #programming, #cad, #business, #pr, #electrical, #mechanical {
   margin-left: 0;
 }
@@ -50,6 +54,7 @@ img {
 
 .outreach-desc {
   width: 100%;
+  text-align: left;
 }
 
 #sponsor-list li {
