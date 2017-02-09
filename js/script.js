@@ -72,12 +72,14 @@ $(document).ready(function(){
       $(".subtitle").click(function() {
         $(this).next().slideToggle(300);
       });
-      $(".desktop-only").hide(); //permanently
+      $(".desktop-only").hide(); //elements we want only on desktop
+      $(".mobile-only").show();
     //desktop
     } else {
       $(".subtitle").next().show();
       $(".subtitle").off("click");
       $(".desktop-only").show();
+      $(".mobile-only").hide(); //elements we want only on mobile
     }
   }
   var media = window.matchMedia("screen and (max-width: 1000px)");
