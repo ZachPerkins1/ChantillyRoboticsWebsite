@@ -61,4 +61,40 @@ $(document).ready(function(){
   var resetTime = setInterval(function(){
     setCountdownTimer(endDate);
   }, 1000); //Every second
+//Konami Code
+var count = 0;
+document.addEventListener('keydown',function(event){
+  switch(event.keyCode){
+    case 38:
+      if(count==0||count==1)count++; //Up arrow
+      else count=0;
+      break;
+    case 40:
+      if(count==2||count==3)count++; //Down arrow
+      else count=0;
+      break;
+    case 37:
+      if(count==4||count==6)count++; //Left Arrow
+      else count=0;
+      break;
+    case 39:
+      if(count==5||count==7)count++; //Right arrow
+      else count=0;
+      break;
+    case 66:
+      if(count==8)count++; //B
+      else count=0;
+      break;
+    case 65:
+      if(count==9)count++; //A
+      else count = 0;
+      break;
+    case 13:
+      if(count==10){ //Enter
+        $("#content").load("memes.html");
+      }
+    default:
+      count = 0;
+  }
+});
 });
