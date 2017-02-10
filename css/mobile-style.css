@@ -17,6 +17,7 @@ img {
 
 .subtitle {
   border-bottom: 2px solid #ddd;
+  cursor: pointer;
 }
 
 #programming, #cad, #business, #pr, #electrical, #mechanical {
