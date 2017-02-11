@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
 
+body {
+  font-size: 250%;
+}
+
 img {
   max-width: 30em;
 }
