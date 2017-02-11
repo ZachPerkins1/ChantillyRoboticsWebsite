@@ -121,7 +121,7 @@ a.clickbutton {
 
 #countdown {
   text-align: center;
-  font-size: 32pt;
+  font-size: 2.7em;
 }
 
 #logo {
@@ -144,7 +144,7 @@ a.clickbutton {
 
 #events {
   overflow-y:scroll;
-  height: 250px;
+  height: 15em;
   padding-left: 3px;
 }
 
