@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+
+img {
+  max-width: 30em;
+}
+
+#subteams .desc {
+  width: 100%;
+  margin-left: 0;
+}
+
+.image-info {
+  width:100%;
+  padding: 0;
+  text-align: center;
+}
+
+.subtitle {
+  border-bottom: 2px solid #ddd;
+  cursor: pointer;
+}
+
+#programming, #cad, #business, #pr, #electrical, #mechanical {
+  margin-left: 0;
+}
+
+#logo {
+  width: 100%;
+  padding: 0;
+}
+
+/* For some reason plain #image-spread doesn't like to apply */
+#image-spread img {
+  width: 100%;
+}
+#navbar li {
+  width: 100%;
+}
+
+#navbar a {
+  border-bottom: 2px solid gray;
+}
+
+#mentor-table .mentor-name {
+  width: 48%;
+}
+
+#mentor-table .mentor-desc {
+  width: 48%;
+}
+
+#outreach li {
+  display: block;
+}
+
+.outreach-desc {
+  width: 100%;
+  text-align: left;
+}
+
+#sponsor-list li {
+  width: 100%;
+}
