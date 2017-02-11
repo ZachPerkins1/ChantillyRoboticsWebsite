@@ -7,6 +7,11 @@ body{
   margin: 0;
 }
 
+/* Force normal font on devices that bold headings by default */
+h1, h2, h3, h4, h5 {
+  font-weight: normal;
+}
+
 a{
   color: #0FF;
 }
