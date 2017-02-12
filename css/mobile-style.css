@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
 
-/* This should enlarge text on phones and not tablets or desktop */
-@media (max-device-width: 512px) {
+/* This should enlarge text on phones and tablets and not desktop */
+@media (max-device-width: 900px) {
   body {
     font-size: 250%;
   }
