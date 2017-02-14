@@ -54,28 +54,6 @@ a:visited{
   padding: 0.25em;
 }
 
-.image-info img{
-  width:80%;
-  height:80%;
-}
-
-table {
-  width: 100%; /* So we can make the table rows as wide as we want */
-}
-
-#mentor-table td {
-  display: inline-block;
-  /*border: 2px solid black;*/
-}
-
-#mentor-table .mentor-name {
-  width: 10%;
-}
-
-#mentor-table .mentor-desc {
-  width: 25%;
-}
-
 .wrapper{
   text-align:center;
 }
