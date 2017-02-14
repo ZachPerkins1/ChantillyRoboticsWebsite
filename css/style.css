@@ -38,8 +38,7 @@ a:visited{
   margin-left: 5%;
 }
 
-/*why not use a class?*/
-#programming, #cad, #business, #pr, #electrical, #mechanical {
+.subteam-divider {
   margin-left: 5%;
 }
 
