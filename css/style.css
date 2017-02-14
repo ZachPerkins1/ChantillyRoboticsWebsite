@@ -138,3 +138,11 @@ a.clickbutton {
 #sponsor-list li {
   width: 30%;
 }
+
+#contacts {
+  text-align: center;
+}
+
+#resources li {
+  width: 19%;
+}
