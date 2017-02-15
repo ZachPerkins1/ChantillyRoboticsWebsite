@@ -63,6 +63,8 @@ $(document).ready(function(){
   }, 1000); //Every second
 //Konami Code
 var count = 0;
+//perhaps we can put this server-side and request?
+var splashes = ["Not verified for the 3DS browser!", "Have you seen the marvelous breadfish?", "Shovel the fries!", "blurred_fruits.jpg", "All day every day!", "All hail the compiler!", "Thank the dealer!", "Sixty-one who?", "#define AWESOMENESS", "if(Boolean.toString(condition).equals(\"true\")"]
 document.addEventListener('keydown',function(event){
   switch(event.keyCode){
     case 38:
@@ -91,7 +93,9 @@ document.addEventListener('keydown',function(event){
       break;
     case 13:
       if(count==10){ //Enter
-        $("#content").load("memes.html");
+        $("#content").load("memes.html", function() {
+          $("#meme-splash").html("(" + splashes[Math.floor(Math.random() * splashes.length)] + ")");
+        });
       }
     default:
       count = 0;
