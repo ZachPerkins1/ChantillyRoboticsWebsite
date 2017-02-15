@@ -7,6 +7,11 @@ body{
   margin: 0;
 }
 
+/* Force normal font on devices that bold headings by default */
+h1, h2, h3, h4, h5 {
+  font-weight: normal;
+}
+
 a{
   color: #0FF;
 }
@@ -20,7 +25,7 @@ a:visited{
 }
 
 .content-box{
-  border: 2px solid grey;
+  /*border: 2px solid grey;*/
   border-radius: 5px;
   margin-bottom:0.6%;
 }
@@ -98,7 +103,7 @@ a.clickbutton {
 
 #countdown {
   text-align: center;
-  font-size: 32pt;
+  font-size: 2.7em;
 }
 
 #logo {
@@ -121,7 +126,7 @@ a.clickbutton {
 
 #events {
   overflow-y:scroll;
-  height: 250px;
+  height: 15em;
   padding-left: 3px;
 }
 
@@ -164,4 +169,12 @@ a.clickbutton {
 #awards-list dd {
   display: inline;
   margin: 2em;
+}
+
+#contacts {
+  text-align: center;
+}
+
+#resources li {
+  width: 19%;
 }
