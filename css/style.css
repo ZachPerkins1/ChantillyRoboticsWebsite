@@ -40,16 +40,21 @@ a:visited{
 
 #subteams .desc {
   width: 60%;
-  margin-left: 5%;
+  margin-left: 5%; 
 }
 
 .subteam-divider {
   margin-left: 5%;
+  margin-bottom: 2%;
+}
+
+/* Vertically center the subteam image and desc */
+.subteam-divider > * {
+  vertical-align: middle;
 }
 
 .image-info{
   width:15%;
-  vertical-align:top;
   padding: 0.25em;
 }
 
@@ -137,6 +142,7 @@ a.clickbutton {
 
 .outreach-desc {
   width: 65%;
+  vertical-align: top;
 }
 
 #sponsor-list li {
@@ -167,8 +173,9 @@ a.clickbutton {
 }
 
 #awards-list dd {
-  display: inline;
-  margin: 2em;
+  display: inline-block;
+  margin-left: 1em;
+  margin-right: 1em;
 }
 
 #contacts {
