@@ -10,7 +10,7 @@ $(document).ready(function(){
   //Note: The load functions will not load local files in Chrome, Internet Explorer, or Edge.
   //They should work when the files are remote hosted though.
   //If you want to see the header and footer loaded on local, use Firefox.
-  $("#header").load("header.html #header-body", function() {
+  $("#header").load("header.html", function() {
     //Returns the rightmost file/directory name sans page anchor and queries
     var page = location.href.split("/").slice(-1)[0].split(/#|\?/, 1)[0];
     if(page == "" || page == "612-Website"){ //Second case is if the page loaded is .../612-Website with no ending slash, just in case
@@ -24,7 +24,7 @@ $(document).ready(function(){
       }
     });
   });
-  $("#footer").load("footer.html #footer-body");
+  $("#footer").load("footer.html");
   //TIMER STUFF
   function setCountdownTimer(end) {
     var elapsed = end - new Date().getTime();
