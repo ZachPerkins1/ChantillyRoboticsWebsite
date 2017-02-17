@@ -40,17 +40,21 @@ a:visited{
 
 #subteams .desc {
   width: 60%;
-  margin-left: 5%;
+  margin-left: 5%; 
 }
 
-/*why not use a class?*/
-#programming, #cad, #business, #pr, #electrical, #mechanical {
+.subteam-divider {
   margin-left: 5%;
+  margin-bottom: 2%;
+}
+
+/* Vertically center the subteam image and desc */
+.subteam-divider > * {
+  vertical-align: middle;
 }
 
 .image-info{
   width:15%;
-  vertical-align:top;
   padding: 0.25em;
 }
 
@@ -115,12 +119,6 @@ a.clickbutton {
   padding: 2em;
 }
 
-#top-seconds {
-    height: 36em;
-    border: 2px solid #ddd; /* Just so we can see the image border */
-    overflow: hidden;
-}
-
 #image-spread {
   text-align: center; /* For meanie images */
 }
@@ -138,16 +136,43 @@ a.clickbutton {
 
 .outreach-desc {
   width: 65%;
+  vertical-align: top;
 }
 
 #sponsor-list li {
   width: 30%;
 }
 
-#contacts {
+#mentor-table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mentor-name, .mentor-desc {
+  width: 50%;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.mentor-name {
+  text-align: right;
+}
+
+#awards-list {
   text-align: center;
 }
 
+#awards-list dt {
+  margin-top: 2em;
+}
+
+#awards-list dd {
+  display: inline-block;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
 #resources li {
-  width: 19%;
+  width: 18em;
+  text-align: initial;
 }
