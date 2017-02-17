@@ -119,12 +119,6 @@ a.clickbutton {
   padding: 2em;
 }
 
-#top-seconds {
-    height: 36em;
-    border: 2px solid #ddd; /* Just so we can see the image border */
-    overflow: hidden;
-}
-
 #image-spread {
   text-align: center; /* For meanie images */
 }
@@ -178,10 +172,7 @@ a.clickbutton {
   margin-right: 1em;
 }
 
-#contacts {
-  text-align: center;
-}
-
 #resources li {
-  width: 19%;
+  width: 18em;
+  text-align: initial;
 }
