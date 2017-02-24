@@ -53,7 +53,7 @@ $(document).ready(function(){
     }
   }
 
-  var endDate = new Date("Feb 21, 2017 23:59:59").getTime();
+  var endDate = new Date("Mar 04, 2017 10:59:59").getTime();
   //  new Date().getTime() + (3 * 1000) + 3000;
 
   //Do it once so it doesn't start empty
