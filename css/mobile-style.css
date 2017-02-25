@@ -38,7 +38,13 @@ img {
 /* For some reason plain #image-spread doesn't like to apply */
 #image-spread img {
   width: 100%;
+  max-width: 100%;
 }
+
+#countdown {
+  position: static; /* Put countdown below image-spread on mobile */
+}
+
 #navbar li {
   width: 100%;
 }
