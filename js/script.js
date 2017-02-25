@@ -1,12 +1,4 @@
 $(document).ready(function(){
-  /*if($("#about-first").length!=0){ //So it only runs on the one page
-    //Hide all subtitle contents at first
-    $(".content-box").find("p").next().hide();
-    //show contents when headers are clicked
-    $(".subtitle").click(function() {
-      $(this).next().slideToggle(300);
-    });
-  }*/
   //Note: The load functions will not load local files in Chrome, Internet Explorer, or Edge.
   //They should work when the files are remote hosted though.
   //If you want to see the header and footer loaded on local, use Firefox.
@@ -25,6 +17,40 @@ $(document).ready(function(){
     });
   });
   $("#footer").load("footer.html");
+  //events
+  $.get("events.json", function(data) {
+    var now = new Date();
+    //take the first 20 events that happen in the future
+    for(var i in data) {
+      var dt = new Date(data[i].date);
+      if(dt >= now) {
+        data = data.slice(i, i + 20);
+        break;
+      }
+    }
+    setEvents(data);
+    setCountdown(data[0]);
+  }, "json");
+  function setEvents(events) {
+    var ev = $("#events");
+    for(var i in events) {
+      ev.append(
+      '<tr class="' + (i % 2 == 0 ? 'entry' : '') + '">\
+         <td class="evname"></td>\
+         <td class="evdate"></td>\
+         <td class="evloc"></td>\
+       </tr>');
+    }
+    var evname = $("#events .evname");
+    var evdate = $("#events .evdate");
+    var evloc = $("#events .evloc");
+    for(var i in events) {
+      evname.eq(i).text(events[i].name);
+      evdate.eq(i).text(events[i].date.slice(0, -9)); //hacky string code
+      evloc.eq(i).text(events[i].where);
+    }
+  }
+  //end events
   //TIMER STUFF
   function setCountdownTimer(end) {
     var elapsed = end - new Date().getTime();
@@ -52,19 +78,17 @@ $(document).ready(function(){
       }
     }
   }
-
-  var endDate = new Date("Mar 04, 2017 10:59:59").getTime();
-  //  new Date().getTime() + (3 * 1000) + 3000;
-
-  //Do it once so it doesn't start empty
-  setCountdownTimer(endDate);
-  var resetTime = setInterval(function(){
+  function setCountdown(to) {
+    var endDate = new Date(to.date).getTime();
+    $("#countdown-desc").text(to.name);
+    //Do it once so it doesn't start empty
     setCountdownTimer(endDate);
-  }, 1000); //Every second
+    var resetTime = setInterval(function(){
+      setCountdownTimer(endDate);
+    }, 1000); //Every second
+  }
   //end timer stuff
-  //
   //put mobile-specific (or desktop-specific) code here
-  //
   function onMobileChange(query) {
     //mobile
     if(query.matches) {

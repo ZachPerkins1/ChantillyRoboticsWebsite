@@ -131,6 +131,10 @@ a.clickbutton {
   padding-left: 3px;
 }
 
+#events td {
+  width: 100vw;
+}
+
 .entry {
   color: white;
   background-color: #333;
