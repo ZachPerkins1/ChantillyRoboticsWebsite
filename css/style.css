@@ -123,12 +123,13 @@ a.clickbutton {
 #image-spread {
   text-align: center; /* For meanie images */
   position: relative; /* So #countdown can position to this */
+  width: calc(100% + 2em); /* So the spread is full-width */
+  left: -1em;
 }
 
 #events {
   overflow-y:scroll;
-  height: 15em;
-  padding-left: 3px;
+  max-height: 15em;
 }
 
 #events td {
