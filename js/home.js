@@ -14,10 +14,10 @@ $(document).ready(function() {
     setCountdown(data[0]);
   }, "json");
   function setEvents(events) {
-    var ev = $("#events table");
+    var ev = $("#events");
     for(var i in events) {
       ev.append(
-      '<tr class="' + (i % 2 == 0 ? 'entry' : '') + '">\
+      '<tr>\
          <td class="evname"></td>\
          <td class="evdate"></td>\
          <td class="evloc"></td>\
