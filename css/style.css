@@ -131,10 +131,13 @@ a.clickbutton {
   display: block;
   overflow-y:scroll;
   max-height: 15em;
+  border-collapse: collapse;
 }
 
 #events td {
   width: 100vw;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
 }
 
 #events tr:nth-child(even) {

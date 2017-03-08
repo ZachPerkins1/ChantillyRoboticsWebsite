@@ -41,6 +41,11 @@ img {
   max-width: 100%;
 }
 
+#events {
+  overflow-y: initial;
+  max-height: initial;
+}
+
 #countdown {
   position: static; /* Put countdown below image-spread on mobile */
 }
