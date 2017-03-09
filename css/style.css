@@ -174,7 +174,11 @@ a.clickbutton {
   margin-right: 1em;
 }
 
-#resources li {
-  width: 18em;
-  text-align: initial;
+.resources {
+  list-style-type: none;
+  display: inline;
+}
+
+.resources .desc {
+  margin-left: 2em;
 }
