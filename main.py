@@ -178,4 +178,4 @@ def default(path):
 
 print "Server Starting..."
 gen_site()
-app.run(debug=True)
+app.run(debug=True, port=os.getenv('PORT', 8080), host=os.getenv('IP', '0.0.0.0'))
