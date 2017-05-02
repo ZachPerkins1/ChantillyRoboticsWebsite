@@ -1,4 +1,6 @@
-<content name="Home">
+{% extends "layout.html" %}
+{% set page_name = "Home" %}
+{% block content %}
     <div id="image-spread">
         <img src="{{ url_for('static', filename='img/team/bag-n-tag-4.jpg') }}" style="width: 100%; padding-top: 2%"/>
         <div id="countdown">
@@ -59,4 +61,4 @@
             Cras hendrerit arcu iaculis interdum placerat.
         </p>
     </div>
-</content>
+{% endblock %}

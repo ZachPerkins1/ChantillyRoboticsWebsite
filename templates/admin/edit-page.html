@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Editor</title>
+    <style>
+        .list-selection {
+            width: 605px;
+            height: 200px;
+            outline: 1px solid #a7a7a7;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        
+        textarea {
+            resize: vertical;
+            width: 350px;
+            height: 15px;
+        }
+        
+        .text {
+            width: 600px;
+            height: 75px;
+        }
+        
+        .image {
+            width: 600px;
+            height: 15px;
+        }
+        
+        table td {
+            vertical-align: top;
+        }
+    </style>
+    <script>
+        {% for list in data["lists"] %}
+            var {{ list["name"] }} = {}
+            {% for var in list["data"] %}
+                {{ list["name"] }}["{{ var["name"] }}"] = {"data":{{ var["data"] }}, "display":"{{ var["display"] }}"}
+            {% endfor %}
+        {% endfor %}
+    </script>
+</head>
+<body>
+    <h1>{{ page_name }}</h1>
+    <form id="edit-page">
+        <h3>Text Elements</h3>
+        {% for text in data["texts"] %}
+            {{ text["display"] }}:<br/>
+            <textarea name="{{ text["name"] }}" class="text" form="edit-page">{{ text["data"] }}</textarea>
+            <br/>
+            <br/>
+        {% endfor %}
+        <h3>Lists</h3>
+        {% for list in data["lists"] %}
+        {{ list["display"] }}:<br/>
+        <div class="list-selection">
+            <dl>
+                {% for var in list["data"] %}
+                    <dt><b>{{ var["n"] }}:</b></dt>
+                    <dd>
+                        <table>
+                            <tr>
+                                {% for attr in var %}
+                                    <td style="width:200px">{{ var["display"] }}:</td>
+                                    <td><textarea name="{{ list["name"] }}:{{ var["name"] }}" form="edit-page">{{ var["data"] }}</textarea></td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </dd>
+                {% endfor %}
+            </dl>
+        </div>
+        {% endfor %}
+        <br/>
+        <br/>
+        <h3>Images</h3>
+        Name:<br/>
+        <textarea name="" class="image" form="edit-page"></textarea>
+        <br/>
+        <br/>
+        
+        <input type="submit" name="update" value="Update"/>
+        <input type="submit" name="preview" value="View Preview"/>
+        <input type="reset" value="Revert"/>
+    </form>
+</body>
+</html>

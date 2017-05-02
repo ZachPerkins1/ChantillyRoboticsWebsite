@@ -1,22 +1,24 @@
-<content name="About Us">
+{% extends "layout.html" %}
+{% set page_name = "About Us" %}
+{% block content %}
     <h1 class="wrapper">About Team 612</h1>
-    <editable type="image" name="test_image" display="fs" alt="Test Image"/>
+    <img src="{{ data["test_image"] }}" alt="Test Image">
     <div id="about-the-team" class="content-box">
         <p>
-            <editable type="text" name="team_desc" display="Team Description"/>
+            {{ data["team_desc"] }}
         </p>
         <h1 class="subtitle mobile-only">Leadership</h1>
         <div class="wrapper">
-            <editable type="list" name="leadership" display="Leadership Descriptions">
+            {% for item in data["leadership"] %}
                 <div class="inline image-info">
                     <var type="image" name="picture" display="Profile Photo"/>
                     <p>
-                        <var type="text" name="name" display="Name"/><br/>
-                        <var type="text" name="position" display="Position"/><br/>
-                        <var type="text" name="desc" display="Description"/>
+                        {{ item["name"] }}<br/>
+                        {{ item["position"] }}<br/>
+                        {{ item["desc"] }}
                     </p>
                 </div>
-            </editable>
+            {% endfor %}
         </div>
     </div>
     <h1 class="subtitle">Subteams</h1>
@@ -29,7 +31,7 @@
             <div class="inline desc">
                 <h3 class="desktop-only">Electrical</h3>
                 <p>
-                    <editable type="text" name="electrical_desc" display="Electrical Description"/>
+                    {{ data["electrical_desc"] }}
                 </p>
             </div>
         </div>
@@ -41,7 +43,7 @@
             <div class="inline desc">
                 <h3 class="desktop-only">Mechanical</h3>
                 <p>
-                    <editable type="text" name="mechanical_desc" display="Mechanical Description"/>
+                    {{ data["mechanical_desc"] }}
                 </p>
             </div>
         </div>
@@ -53,7 +55,7 @@
             <div class="inline desc">
                 <h3 class="desktop-only">CAD</h3>
                 <p>
-                    <editable type="text" name="cad_desc" display="CAD Description"/>
+                    {{ data["cad_desc"] }}
                 </p>
             </div>
         </div>
@@ -65,7 +67,7 @@
             <div class="inline desc">
                 <h3 class="desktop-only">Programming</h3>
                 <p>
-                    <editable type="text" name="programming_desc" display="Programming Description"/>
+                    {{ data["programming_desc"] }}
                 </p>
             </div>
         </div>
@@ -77,7 +79,7 @@
             <div class="inline desc">
                 <h3 class="desktop-only">Marketing</h3>
                 <p>
-                    <editable type="text" name="marketing_desc" display="Marketing Description"/>
+                    {{ data["marketing_desc"] }}
                 </p>
             </div>
         </div>
@@ -88,19 +90,19 @@
                 Thank you to all of our mentors. Our team succeeds every year because of you all.
             </center>
         <table id="mentor-table">
-            <editable type="list" name="mentors" display="Mentor Table">
-                <td class="mentor-name"><var type="text" name="mentor_name" display="Name"/></td>
-                <td class="mentor-desc"><var type="text" name="mentor_desc" display="Description"/></td>
-            </editable>
+            {% for item in data["mentors"] %}
+                <td class="mentor-name">{{ item["mentor_name"] }}</td>
+                <td class="mentor-desc">{{ item["mentor_desc"] }}</td>
+            {% endfor %}
         </table>
     </div>
     <h1 class="subtitle">Awards</h1>
     <div id="awards" class="content-box">
         <dl id="awards-list">
-            <editable type="list" name="awards" display="Awards List">
-                <dt><var type="text" name="year" display="Name"/></dt>
-                <dd><var type="text" name="awards" display="Award"/></dd>
-            </editable>
+            {% for item in data["awards"] %}
+                <dt>{{ item["year"] }}</dt>
+                <dd>{{ item["awards"] }}</dd>
+            {% endfor %}
         </dl>
     </div>
-</content>
+{% endblock %}
