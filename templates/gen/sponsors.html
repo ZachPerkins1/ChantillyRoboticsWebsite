@@ -1,41 +1,17 @@
-{% extends "layout.html" %}
+{% extends "blocks/layout.html" %}
 {% set page_name = "Sponsors" %}
 {% block content %}
     <div id="sponsor-list" class="content-box">
         <h1 class="wrapper"> Our Sponsors </h1>
         <ul class="line-list wrapper">
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 1 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 2 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 3 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 4 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 5 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 6 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 7 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 8 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
+            {% for item in data["sponsors"] %}
+                <li>
+                    <var type="image" name="logo" display="Sponsor Image"/>
+                    <p>{{ item["title"] }}</p>
+                    <p>{{ item["info"] }}</p>
+                    <p>{{ item["contact"] }}</p>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}

@@ -1,56 +1,26 @@
-{% extends "layout.html" %}
+{% extends "blocks/layout.html" %}
 {% set page_name = "Resources" %}
 {% block content %}
     <h2 class="wrapper">Contact</h2>
     <ul id="contacts" class="line-list wrapper">
-        <li>
-            Loryn Ipsum<br/>
-            Role on the team<br/>
-            <a href="mailto:">email@server.net</a><br/>
-            Telephone (if a teacher sponsor)
-        </li>
-        <li>
-            Loryn Ipsum<br/>
-            Role on the team<br/>
-            <a href="mailto:">email@server.net</a><br/>
-            Telephone (if a teacher sponsor)
-        </li>
-        <li>
-            Loryn Ipsum<br/>
-            Role on the team<br/>
-            <a href="mailto:">email@server.net</a><br/>
-            Telephone (if a teacher sponsor)
-        </li>
-        <li>
-            Loryn Ipsum<br/>
-            Role on the team<br/>
-            <a href="mailto:">email@server.net</a><br/>
-            Telephone (if a teacher sponsor)
-        </li>
-        <li>
-            Loryn Ipsum<br/>
-            Role on the team<br/>
-            <a href="mailto:">email@server.net</a><br/>
-            Telephone (if a teacher sponsor)
-        </li>
-        <li>
-            Loryn Ipsum<br/>
-            Role on the team<br/>
-            <a href="mailto:">email@server.net</a><br/>
-            Telephone (if a teacher sponsor)
-        </li>
+        {% for item in data["contacts"] %}
+            <li>
+                {{ item["name"] }}<br/>
+                {{ item["role"] }}<br/>
+                {{ item["email"] }}<br/>
+            </li>
+        {% endfor %}
     </ul>
     <h2 class="wrapper">Resources</h2>
-    <ul id="resources" class="line-list wrapper">
-        <li>Online technical notebook: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
-        <li>Other resources...: <a href="#">Link</a></li>
+    <ul class="resources">
+        {% for item in data["resources"] %}
+            <li>
+                <!-- link syntax is lacking -->
+                {{ item["name"] }}
+                <p class="desc">
+                    {{ item["desc"] }}
+                </p>
+            </li>
+        {% endfor %}
     </ul>
 {% endblock %}
