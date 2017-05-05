@@ -222,7 +222,7 @@ def home():
 def default(path):
     """The render function used for normal web pages on the site (such as the home page, About page, etc.)"""
     if r.sismember("pages", path):
-        return render_template("gen/" + path + ".html", data={}, pg=path)
+        return render_template("gen/" + path + ".html", data={ "page": path })
 
 print "Server Starting..."
 gen_site()
