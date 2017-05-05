@@ -32,18 +32,22 @@
             vertical-align: top;
         }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
+        var lists = {}
         {% for list in data["lists"] %}
-            var {{ list["name"] }} = {}
+            lists["{{ list["name"] }}"] = {}
             {% for var in list["data"] %}
-                {{ list["name"] }}["{{ var["name"] }}"] = {"data":{{ var["data"] }}, "display":"{{ var["display"] }}"}
+                lists["{{ list["name"] }}"]["{{ var["name"] }}"] = {"data":{{ var["data"] }}, "display":"{{ var["display"] }}"}
             {% endfor %}
+            lists["{{ list["name"] }}"]["_count"] = {{ list["count"] }}
+            lists["{{ list["name"] }}"]["_display"] ="{{ list["display"] }}"
         {% endfor %}
     </script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/admin.js") }}"></script>
 </head>
-<body>
+<body onload="start()">
     <h1>{{ page_name }}</h1>
-    <form id="edit-page">
         <h3>Text Elements</h3>
         {% for text in data["texts"] %}
             {{ text["display"] }}:<br/>
@@ -52,26 +56,8 @@
             <br/>
         {% endfor %}
         <h3>Lists</h3>
-        {% for list in data["lists"] %}
-        {{ list["display"] }}:<br/>
-        <div class="list-selection">
-            <dl>
-                {% for var in list["data"] %}
-                    <dt><b>{{ var["n"] }}:</b></dt>
-                    <dd>
-                        <table>
-                            <tr>
-                                {% for attr in var %}
-                                    <td style="width:200px">{{ var["display"] }}:</td>
-                                    <td><textarea name="{{ list["name"] }}:{{ var["name"] }}" form="edit-page">{{ var["data"] }}</textarea></td>
-                                {% endfor %}
-                            </tr>
-                        </table>
-                    </dd>
-                {% endfor %}
-            </dl>
+        <div id="lists">
         </div>
-        {% endfor %}
         <br/>
         <br/>
         <h3>Images</h3>
@@ -80,9 +66,8 @@
         <br/>
         <br/>
         
-        <input type="submit" name="update" value="Update"/>
-        <input type="submit" name="preview" value="View Preview"/>
-        <input type="reset" value="Revert"/>
-    </form>
+        <button type="submit" name="update" value="Update"/>
+        <button type="submit" name="preview" value="View Preview"/>
+        <button type="reset" value="Revert"/>
 </body>
 </html>
