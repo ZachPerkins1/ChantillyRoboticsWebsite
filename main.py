@@ -1,6 +1,7 @@
 import sys
 import re
 import os
+import math
 
 sys.modules['_elementtree'] = None
 
@@ -15,7 +16,13 @@ r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password
 
 app.jinja_env.autoescape = False
 
-r.delete("about-us:lists:mentors:mentor_desc:data")
+r.lpush("about-us:lists:mentors:mentor_name:data", "joe")
+r.lpush("about-us:lists:mentors:mentor_name:data", "dave")
+
+r.lpush("about-us:lists:mentors:mentor_desc:data", "good mentor")
+r.lpush("about-us:lists:mentors:mentor_desc:data", "bad mentor")
+
+
 
 class LineNumberingParser(et.XMLParser):
     def _start_list(self, *args, **kwargs):
@@ -155,11 +162,14 @@ def edit_page(page):
             texts.append(name_data)
         elif name_data["type"] == "list":
             name_data["data"] = []
+            min_count = sys.maxint
             for var in r.smembers(page + ":list_index:" + name):
                 list = r.hgetall(page + ":lists:" + name + ":" + var)
                 list["data"] = r.lrange(page + ":lists:" + name + ":" + var + ":data", 0, -1)
                 name_data["data"].append(list)
-
+                min_count = min(min_count, len(list["data"]))
+            
+            name_data["count"] = min_count
             lists.append(name_data)
             print name_data
 
@@ -178,4 +188,4 @@ def default(path):
 
 print "Server Starting..."
 gen_site()
-app.run(debug=True, port=os.getenv('PORT', 8080), host=os.getenv('IP', '0.0.0.0'))
+app.run(debug=True, port=int(os.getenv('PORT', '8080')), host=os.getenv('IP', '0.0.0.0'))
