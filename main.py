@@ -16,6 +16,9 @@ r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password
 
 app.jinja_env.autoescape = False
 
+r.delete("about-us:lists:mentors:mentor_name:data")
+r.delete("about-us:lists:mentors:mentor_desc:data")
+
 r.lpush("about-us:lists:mentors:mentor_name:data", "joe")
 r.lpush("about-us:lists:mentors:mentor_name:data", "dave")
 

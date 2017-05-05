@@ -41,13 +41,13 @@
                 lists["{{ list["name"] }}"]["{{ var["name"] }}"] = {"data":{{ var["data"] }}, "display":"{{ var["display"] }}"}
             {% endfor %}
             lists["{{ list["name"] }}"]["_count"] = {{ list["count"] }}
+            lists["{{ list["name"] }}"]["_display"] ="{{ list["display"] }}"
         {% endfor %}
     </script>
     <script type="text/javascript" src="{{ url_for("static", filename="js/admin.js") }}"></script>
 </head>
 <body onload="start()">
     <h1>{{ page_name }}</h1>
-    <form id="edit-page">
         <h3>Text Elements</h3>
         {% for text in data["texts"] %}
             {{ text["display"] }}:<br/>
@@ -56,7 +56,7 @@
             <br/>
         {% endfor %}
         <h3>Lists</h3>
-        <div class="list-selection" id="mentors">
+        <div id="lists">
         </div>
         <br/>
         <br/>
@@ -66,9 +66,8 @@
         <br/>
         <br/>
         
-        <input type="submit" name="update" value="Update"/>
-        <input type="submit" name="preview" value="View Preview"/>
-        <input type="reset" value="Revert"/>
-    </form>
+        <button type="submit" name="update" value="Update"/>
+        <button type="submit" name="preview" value="View Preview"/>
+        <button type="reset" value="Revert"/>
 </body>
 </html>
