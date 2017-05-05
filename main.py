@@ -46,11 +46,28 @@ class LineNumberingParser(et.XMLParser):
 
 
 def replace_tag(tag, line, replacement):
+    """Replaces an HTML tag (such as <editable> or <var/>) in the given content with the given replacement.
+
+    Params:
+        tag - the HTML tag to replace
+        line - the content in which to replace the tag
+        replacement - the replacement string
+    Returns:
+        The replacement tag as a string (?).
+    """
     r = re.compile("<" + tag + "[^<]*(/>|>)")
     return re.sub(r, replacement, line)
 
 
 def gen_image_tag(attr, cname):
+    """Generates an <img/> HTML tag from the given attribute, which is an image <editable> tag.
+
+    Params:
+        attr - the image <editable> attribute
+        cname - a string version of the attribute name, in the form data["name"]
+    Returns:
+        The new <img/> tag as a string.
+    """
     text = "<img src=\"{{ " + cname + " }}\""
     r = dict(attr)
     del r["name"]
@@ -68,6 +85,10 @@ def gen_image_tag(attr, cname):
 
 
 def process_list(content, e):
+    """Processes a list. (Clarify!!).
+        This method replaces <var type="text"/> tags in the list with the appropriate Jinja expressions.
+        For some reason, images and lists are not supported.
+    """
     vars = e.findall(".//var")
     for var in e.findall(".//var"):
         type = var.get("type")
@@ -80,6 +101,9 @@ def process_list(content, e):
 
 
 def gen_site():
+    """Generates Jinja template files from front-end files in the home directory.
+        This method is called before server startup.
+    """
     print "Regenerating Templates..."
     files = listdir("templates")
     files = [fn for fn in files if fn.endswith(".html")]
@@ -102,6 +126,7 @@ def gen_site():
         with open("templates/" + fn) as f:
             content = f.readlines()
 
+        # parses each editable tag and replaces with Jinja equivalents
         for e in editables:
             type = e.get("type")
             name = e.get("name")
@@ -141,7 +166,7 @@ def gen_site():
         content[-1] = "{% endblock %}"
 
         top_text = [
-            "{% extends \"layout.html\" %}\n",
+            "{% extends \"blocks/layout.html\" %}\n",
             "{% set page_name = \"" + root.get("name") + "\" %}\n",
             "{% block content %}\n"
         ]
@@ -155,6 +180,9 @@ def gen_site():
 
 @app.route("/admin/edit-page/<page>")
 def edit_page(page):
+    """Generates and returns an "edit page" page for the given page.
+        Admins use these pages to add content to the website.
+    """
     names = r.smembers(page + ":name_index")
     lists = []
     texts = []
@@ -184,10 +212,17 @@ def edit_page(page):
     return render_template("admin/edit-page.html", data=page_data)
 
 
+@app.route("/")
+def home():
+    """Renders the home page"""
+    return default("index")
+
+
 @app.route("/<path:path>")
 def default(path):
+    """The render function used for normal web pages on the site (such as the home page, About page, etc.)"""
     if r.sismember("pages", path):
-        return render_template(path + ".html")
+        return render_template("gen/" + path + ".html", data={ "page": path })
 
 print "Server Starting..."
 gen_site()

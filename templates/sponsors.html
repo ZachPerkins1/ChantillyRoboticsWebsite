@@ -2,38 +2,14 @@
     <div id="sponsor-list" class="content-box">
         <h1 class="wrapper"> Our Sponsors </h1>
         <ul class="line-list wrapper">
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 1 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 2 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 3 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 4 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 5 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 6 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 7 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
-            <li><img src="img/fruits.jpg" width="75%"/>
-                <p> Sponsor 8 </p>
-                <p> INFO </p>
-                <p> Contact </p></li>
+            <editable type="list" name="sponsors">
+                <li>
+                    <var type="image" name="logo" display="Sponsor Image"/>
+                    <p><var type="text" name="title" display="Sponsor Name"/></p>
+                    <p><var type="text" name="info" display="Sponsor Info"/></p>
+                    <p><var type="text" name="contact" displaye="Contact Info"/></p>
+                </li>
+            </editable>
         </ul>
     </div>
 </content>
