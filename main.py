@@ -199,11 +199,17 @@ def edit_page(page):
     return render_template("admin/edit-page.html", data=page_data)
 
 
+@app.route("/")
+def home():
+    """Renders the home page"""
+    return default("index")
+
+
 @app.route("/<path:path>")
 def default(path):
     """The render function used for normal web pages on the site (such as the home page, About page, etc.)"""
     if r.sismember("pages", path):
-        return render_template("gen/" + path + ".html", data=[], pg=path)
+        return render_template("gen/" + path + ".html", data={}, pg=path)
 
 print "Server Starting..."
 gen_site()
