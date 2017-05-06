@@ -13,13 +13,19 @@
     <img id="logo" src="{{ url_for('static', filename='img/logo.png') }}">
     <div id="navbar">
         <ul class="line-list">
-            <li><a class="clickbutton" href="{{ url_for('home') }}">Home</a></li>
-            <li><a class="clickbutton" href="{{ url_for('about_us') }}">About</a></li>
-            <li><a class="clickbutton" href="{{ url_for('about_first') }}">FIRST</a></li>
-            <li><a class="clickbutton" href="{{ url_for('outreach') }}">Outreach</a></li>
+            <li><a class="clickbutton {{ 'active' if data['page'] == 'index' else ''}}"
+                   href="{{ url_for('default', path='index') }}">Home</a></li>
+            <li><a class="clickbutton {{ 'active' if data['page'] == 'about-us' else ''}}"
+                   href="{{ url_for('default', path='about-us') }}">About</a></li>
+            <li><a class="clickbutton {{ 'active' if data['page'] == 'about-first' else ''}}"
+                   href="{{ url_for('default', path='about-first') }}">FIRST</a></li>
+            <li><a class="clickbutton {{ 'active' if data['page'] == 'outreach' else ''}}"
+                   href="{{ url_for('default', path='outreach') }}">Outreach</a></li>
             <li><a class="clickbutton" href="#">Team History</a></li>
-            <li><a class="clickbutton" href="{{ url_for('resources') }}">Resources</a></li>
-            <li><a class="clickbutton" href="{{ url_for('sponsors') }}">Sponsors</a></li>
+            <li><a class="clickbutton {{ 'active' if data['page'] == 'resources' else ''}}"
+                   href="{{ url_for('default', path='resources') }}">Resources</a></li>
+            <li><a class="clickbutton {{ 'active' if data['page'] == 'sponsors' else ''}}"
+                   href="{{ url_for('default', path='sponsors') }}">Sponsors</a></li>
         </ul>
     </div>
 </div>
