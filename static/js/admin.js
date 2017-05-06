@@ -22,6 +22,13 @@ function makeTable(listName) {
             
         addItem(listName, variables, false, x+1);
     }
+    
+    var addNew = document.createElement("button");
+    addNew.setAttribute("onclick", "addItemEmpty('" + listName + "')");
+    addNew.appendChild(document.createTextNode("Add New"));
+    document.getElementById("lists").appendChild(addNew);
+    document.getElementById("lists").appendChild(document.createElement("br"));
+    document.getElementById("lists").appendChild(document.createElement("br"));
 }
 
 function switchItems(listName, idA, idB) {
@@ -189,5 +196,67 @@ function start() {
     var lists = window.lists;
     for (var list in lists) {
         makeTable(list);
+    }
+}
+
+function updateLocal() {
+    var texts = window.texts;
+    var lists = window.lists;
+    
+    var textSection = document.getElementById("texts").getElementsByTagName("textarea");
+    
+    var k = 0;
+    for (var text in texts) {
+        texts[text]["data"] = textSection[k].value;
+        k++;
+    } 
+    
+    var listSection = document.getElementById("lists");
+    for (var i = 0; i < lists.length; i++) {
+        var divs = listSection[i].getElementsByTagName["div"];
+    
+        for (var variable in lists) {
+            var x = 0;
+            var div = listSection[i];
+            
+            if (variable.charAt(0) != "_") {
+                lists[variable]["data"].clear();
+                for (var item in divs) {
+                    var inputs = item.getElementsByTagName("textarea");
+                    lists[variable]["data"].push(inputs[x]);
+                }
+                x++;
+            }
+        }
+    }
+    
+    for (var text in texts) {
+        console.log(texts[text]["data"]);
+    }
+    
+    
+}
+
+function save() {
+    if (confirm("Are you sure that you want to save? There is no way to revert after these changes are made.")) {
+        updateLocal();
+        
+        var tmpList = {};
+        for (var item in window.lists) {
+            if (item.charAt(0) != "_") {
+                tmpList[item] = window.lists[item];
+            }
+        }
+        
+        $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
+            data: {
+                lists: JSON.stringify(tmpList),
+                texts: JSON.stringify(window.texts),
+                page_name: "about-us",
+                test: "hello"
+            },
+            success: function(data){
+                alert(data.data);
+            }, dataType: "json", type: "post"});
     }
 }

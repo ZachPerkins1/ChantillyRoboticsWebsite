@@ -10,6 +10,11 @@
             outline: 1px solid #a7a7a7;
             overflow-y: scroll;
             overflow-x: hidden;
+            resize: vertical;
+        }
+        
+        .list {
+            
         }
         
         textarea {
@@ -34,6 +39,12 @@
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
+        var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+        var texts = {}
+        {% for text in data["texts"] %}
+            texts["{{ text["name"] }}"]= {"data":"{{ text["data"] }}", "display":"{{ text["display"] }}"}
+        {% endfor %}
         var lists = {}
         {% for list in data["lists"] %}
             lists["{{ list["name"] }}"] = {}
@@ -49,12 +60,14 @@
 <body onload="start()">
     <h1>{{ page_name }}</h1>
         <h3>Text Elements</h3>
+        <div id="texts">
         {% for text in data["texts"] %}
             {{ text["display"] }}:<br/>
-            <textarea name="{{ text["name"] }}" class="text" form="edit-page">{{ text["data"] }}</textarea>
+            <textarea name="{{ text["name"] }}" class="text">{{ text["data"] }}</textarea>
             <br/>
             <br/>
         {% endfor %}
+        </div>
         <h3>Lists</h3>
         <div id="lists">
         </div>
@@ -66,8 +79,7 @@
         <br/>
         <br/>
         
-        <button type="submit" name="update" value="Update"/>
-        <button type="submit" name="preview" value="View Preview"/>
-        <button type="reset" value="Revert"/>
+        <button onclick="save()">Save</button>
+        <button>View Preview</button>
 </body>
 </html>
