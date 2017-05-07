@@ -83,6 +83,23 @@ def gen_image_tag(attr, cname):
 
     text += ">"
     return text
+    
+
+def getData(page, name):
+    name_data = r.hgetall(page + ":names:" + name)
+
+    if name_data["type"] == "list":
+        name_data["data"] = []
+        min_count = sys.maxint
+        for var in r.smembers(page + ":list_index:" + name):
+            list = r.hgetall(page + ":lists:" + name + ":" + var)
+            list["data"] = r.lrange(page + ":lists:" + name + ":" + var + ":data", 0, -1)
+            name_data["data"].append(list)
+            min_count = min(min_count, len(list["data"]))
+        
+        name_data["count"] = min_count
+        
+    return name_data
 
 
 def process_list(content, e):
@@ -189,21 +206,11 @@ def edit_page(page):
     texts = []
 
     for name in names:
-        name_data = r.hgetall(page + ":names:" + name)
+        name_data = getData(page, name)
         if name_data["type"] == "text":
             texts.append(name_data)
         elif name_data["type"] == "list":
-            name_data["data"] = []
-            min_count = sys.maxint
-            for var in r.smembers(page + ":list_index:" + name):
-                list = r.hgetall(page + ":lists:" + name + ":" + var)
-                list["data"] = r.lrange(page + ":lists:" + name + ":" + var + ":data", 0, -1)
-                name_data["data"].append(list)
-                min_count = min(min_count, len(list["data"]))
-            
-            name_data["count"] = min_count
             lists.append(name_data)
-            print name_data
 
     page_data = {
         "lists": lists,
@@ -232,7 +239,7 @@ def save():
             r.delete(page + ":lists:" + name + ":" + var + ":data")
             for item in lists[name][var]["data"]:
                 # print item
-                r.lpush(page + ":lists:" + name + ":" + var + ":data", item)
+                r.rpush(page + ":lists:" + name + ":" + var + ":data", item)
                 
     return "hello";
 
@@ -247,7 +254,32 @@ def home():
 def default(path):
     """The render function used for normal web pages on the site (such as the home page, About page, etc.)"""
     if r.sismember("pages", path):
-        return render_template("gen/" + path + ".html", data={ "page": path })
+        data = {}
+        names = r.smembers(path+ ":name_index")
+        for name in names:
+            name_data = getData(path, name)
+            if name_data["type"] == "text":
+                data[name] = name_data["data"]
+            if name_data["type"] == "list":
+                lists = []
+                for i in range(name_data["count"]):
+                    item = {}
+                    x = 0
+                    for var in name_data["data"]:
+                        print name_data["data"][x]
+                        item[var["name"]] = name_data["data"][x]["data"][i]
+                        x += 1
+                        
+                    lists.append(item)
+                    
+                data[name] = lists
+                    
+           
+        data["page"] = path
+        
+        print data
+            
+        return render_template("gen/" + path + ".html", data=data)
 
 print "Server Starting..."
 gen_site()
