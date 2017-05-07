@@ -279,6 +279,8 @@ def default(path):
         print data
             
         return render_template("gen/" + path + ".html", data=data)
+    else:
+        return render_template("blocks/not-found.html", data={ "page_url": path }), 404
 
 print "Server Starting..."
 gen_site()

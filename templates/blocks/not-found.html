@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page not Found</title>
+    <link rel="icon" href="/static/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" media="screen and (max-width: 1000px)" href="{{ url_for('static', filename='css/mobile-style.css') }}">
+</head>
+<body style="text-align:center">
+    <img id="logo" src="{{ url_for('static', filename='img/logo.png') }}" style="width:20em">
+    <h1>404 - Page not Found</h1>
+    <p>Sorry, we couldn't find '{{ data["page_url"] }}'</p>
+    <p><a href="{{ url_for('home') }}">Back to main page</a></p>
+</body>
+</html>
