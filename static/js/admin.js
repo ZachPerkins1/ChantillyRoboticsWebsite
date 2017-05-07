@@ -250,6 +250,8 @@ function save(page) {
             }
         }
         
+        document.getElementById("message-box").innerHTML = "Saving..."
+        
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
             data: {
                 list: JSON.stringify(tmpList),
@@ -258,7 +260,7 @@ function save(page) {
                 test: "hello"
             },
             success: function(data){
-                alert(data.data);
+                document.getElementById("message-box").innerHTML = "Saved.";
             }, dataType: "json", type: "post"});
     }
 }
