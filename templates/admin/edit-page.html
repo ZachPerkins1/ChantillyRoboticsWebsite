@@ -37,28 +37,36 @@
             vertical-align: top;
         }
     </style>
+    {% macro jsescape(str) -%}
+        {{ str|replace('\"', '\\\"')|replace('\n', '\\n')|replace('\r', '\\r') }}
+    {%- endmacro %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
         var texts = {}
         {% for text in data["texts"] %}
-            texts["{{ text["name"] }}"]= {"data":"{{ text["data"] }}", "display":"{{ text["display"] }}"}
+            texts["{{ text['name'] }}"]= {"data":"{{ jsescape(text['data']) }}", "display":"{{ jsescape(text['display']) }}"}
         {% endfor %}
         var lists = {}
         {% for list in data["lists"] %}
-            lists["{{ list["name"] }}"] = {}
+            lists["{{ list['name'] }}"] = {}
             {% for var in list["data"] %}
-                lists["{{ list["name"] }}"]["{{ var["name"] }}"] = {"data":{{ var["data"] }}, "display":"{{ var["display"] }}"}
+                lists["{{ list['name'] }}"]["{{ var['name'] }}"] = {"data":[
+                    {% for entry in var["data"] -%}
+                        {{ ',' if loop.index > 1 else '' }}
+                        "{{ jsescape(entry) }}"
+                    {%- endfor %}
+                ], "display":"{{ jsescape(var['display']) }}"}
             {% endfor %}
-            lists["{{ list["name"] }}"]["_count"] = {{ list["count"] }}
-            lists["{{ list["name"] }}"]["_display"] ="{{ list["display"] }}"
+            lists["{{ list['name'] }}"]["_count"] = {{ list["count"] }}
+            lists["{{ list['name'] }}"]["_display"] ="{{ list['display'] }}"
         {% endfor %}
     </script>
     <script type="text/javascript" src="{{ url_for("static", filename="js/admin.js") }}"></script>
 </head>
 <body onload="start()">
-    <h1>{{ page_name }}</h1>
+    <h1>{{ data['page_name'] }}</h1>
         <h3>Text Elements</h3>
         <div id="texts">
         {% for text in data["texts"] %}
@@ -79,7 +87,7 @@
         <br/>
         <br/>
         
-        <button onclick="save()">Save</button>
+        <button onclick="save('{{ data['page_name'] }}')">Save</button>
         <button>View Preview</button>
 </body>
 </html>
