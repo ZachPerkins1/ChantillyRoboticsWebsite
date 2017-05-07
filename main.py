@@ -6,7 +6,7 @@ import json
 
 sys.modules['_elementtree'] = None
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import flask
 import xml.etree.ElementTree as et
 import redis
@@ -238,10 +238,9 @@ def save():
         for var in lists[name]:
             r.delete(page + ":lists:" + name + ":" + var + ":data")
             for item in lists[name][var]["data"]:
-                # print item
                 r.rpush(page + ":lists:" + name + ":" + var + ":data", item)
                 
-    return "hello";
+    return jsonify(name="Hello")
 
 
 @app.route("/")
