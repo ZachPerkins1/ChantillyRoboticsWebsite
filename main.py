@@ -215,10 +215,10 @@ def edit_page(page):
     
 @app.route("/admin/save-data", methods=['POST'])
 def save():
-    lists = json.loads(request.form.get("lists"))
-    texts = json.loads(request.form.get("texts"))
+    lists = json.loads(request.form.get("list"))
+    texts = json.loads(request.form.get("text"))
     page = request.form.get("page_name")
-    print texts
+    print lists
     #test = request.form.get("test", "", type=str)
     
    # print test
@@ -227,11 +227,12 @@ def save():
 
     for name in texts:
         r.hmset(page + ":names:" + name, texts[name]) 
-    #for name in lists:
-    #    for var in lists[name]:
-    #        r.delete(page + ":lists:" + name + ":" + var + ":data")
-    #        for item in lists[name][var]["data"]:
-    #            r.lpush(page + ":lists:" + name + ":" + var + ":data", item)
+    for name in lists:
+        for var in lists[name]:
+            r.delete(page + ":lists:" + name + ":" + var + ":data")
+            for item in lists[name][var]["data"]:
+                # print item
+                r.lpush(page + ":lists:" + name + ":" + var + ":data", item)
                 
     return "hello";
 

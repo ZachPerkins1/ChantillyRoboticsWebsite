@@ -194,6 +194,7 @@ function moveDown(listName, id) {
 
 function start() {
     var lists = window.lists;
+    
     for (var list in lists) {
         makeTable(list);
     }
@@ -211,29 +212,27 @@ function updateLocal() {
         k++;
     } 
     
-    var listSection = document.getElementById("lists");
-    for (var i = 0; i < lists.length; i++) {
-        var divs = listSection[i].getElementsByTagName["div"];
+    var listSection = document.getElementById("lists").getElementsByClassName("list-selection");
     
-        for (var variable in lists) {
-            var x = 0;
-            var div = listSection[i];
-            
+    var i = 0;
+    for (var list in lists) {
+        var divs = listSection[i].getElementsByTagName("div");
+        
+        var x = 0;
+        for (var variable in lists[list]) {
             if (variable.charAt(0) != "_") {
-                lists[variable]["data"].clear();
-                for (var item in divs) {
-                    var inputs = item.getElementsByTagName("textarea");
-                    lists[variable]["data"].push(inputs[x]);
+                lists[list][variable]["data"] = [];
+                for (var j = 0; j < divs.length; j++) {
+                    var inputs = divs[j].getElementsByTagName("textarea");
+                    lists[list][variable]["data"].push(inputs[x].value);
                 }
+                
                 x++;
             }
         }
+        
+        i++;
     }
-    
-    for (var text in texts) {
-        console.log(texts[text]["data"]);
-    }
-    
     
 }
 
@@ -243,15 +242,18 @@ function save() {
         
         var tmpList = {};
         for (var item in window.lists) {
-            if (item.charAt(0) != "_") {
-                tmpList[item] = window.lists[item];
+            tmpList[item] = {};
+            for (var variable in window.lists[item]) {
+                if (variable.charAt(0) != "_") {
+                    tmpList[item][variable] = window.lists[item][variable];
+                }
             }
         }
         
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
             data: {
-                lists: JSON.stringify(tmpList),
-                texts: JSON.stringify(window.texts),
+                list: JSON.stringify(tmpList),
+                text: JSON.stringify(window.texts),
                 page_name: "about-us",
                 test: "hello"
             },
