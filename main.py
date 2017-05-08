@@ -94,10 +94,17 @@ def getData(page, name):
         for var in r.smembers(page + ":list_index:" + name):
             list = r.hgetall(page + ":lists:" + name + ":" + var)
             list["data"] = r.lrange(page + ":lists:" + name + ":" + var + ":data", 0, -1)
+            for i in range(len(list["data"])):
+                list["data"][i] = list["data"][i].decode("UTF-8")
+            if "display" in list:
+                list["display"] = list["display"].decode("UTF-8")
             name_data["data"].append(list)
             min_count = min(min_count, len(list["data"]))
         
         name_data["count"] = min_count
+    elif name_data["type"] == "text":
+        name_data["data"] = name_data["data"].decode("UTF-8")
+    name_data["display"] = name_data["display"].decode("UTF-8")
         
     return name_data
 

@@ -236,7 +236,7 @@ function updateLocal() {
     
 }
 
-function save() {
+function save(page) {
     if (confirm("Are you sure that you want to save? There is no way to revert after these changes are made.")) {
         updateLocal();
         
@@ -256,7 +256,7 @@ function save() {
             data: {
                 list: JSON.stringify(tmpList),
                 text: JSON.stringify(window.texts),
-                page_name: "about-us",
+                page_name: page,
                 test: "hello"
             },
             success: function(data){
