@@ -150,6 +150,8 @@ def gen_site():
 
         with open("templates/" + fn) as f:
             content = f.readlines()
+            
+        names = []
 
         # parses each editable tag and replaces with Jinja equivalents
         for e in editables:
@@ -161,7 +163,8 @@ def gen_site():
             bottom = e._end_line_number - 1
 
             d = dict(e.attrib)
-
+            
+            names.append(name)
             r.sadd(page_name + ":name_index", name)
             vars = None
 
@@ -181,7 +184,11 @@ def gen_site():
                 for var in vars:
                     r.sadd(page_name + ":list_index:" + name, var.get("name"))
                     r.hmset(page_name + ":lists:" + name + ":" + var.get("name"), var.attrib)
-
+        
+        for name in r.smembers(page_name + ":name_index"):
+            if name not in names:
+                r.srem(page_name + ":name_index", name)
+        
         path = "templates/gen/" + fn
 
         if os.path.isfile(path):
