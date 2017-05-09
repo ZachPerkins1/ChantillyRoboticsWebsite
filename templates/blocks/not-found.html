@@ -7,10 +7,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" media="screen and (max-width: 1000px)" href="{{ url_for('static', filename='css/mobile-style.css') }}">
 </head>
-<body style="text-align:center;font-size:150%">
+<body style="text-align:center;font-size:125%">
     <img id="logo" src="{{ url_for('static', filename='img/logo.png') }}">
     <h1>404 - Page not Found</h1>
-    <p>Sorry, we couldn't find '{{ data["page_url"] }}'</p>
+    <p>Hmmm, looks like that page isn't on our site.</p>
     <p><a href="{{ url_for('home') }}">Back to main page</a></p>
 </body>
 </html>
