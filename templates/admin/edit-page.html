@@ -88,7 +88,7 @@
         <div id="images">
         <h3>Images</h3>
         {% for image in data["images"] %}
-            {{ image["display"] }}: <form enctype="multipart/form-data" class="image-upload"><input name="file" type="file" /><span class="progress"></span></form>
+            {{ image["display"] }}: <form enctype="multipart/form-data" class="image-upload"><input name="file" type="file" />   <span class="progress"></span></form>
             <br/>
             <br/>
         {% endfor %}

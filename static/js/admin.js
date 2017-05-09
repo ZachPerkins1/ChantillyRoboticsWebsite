@@ -270,6 +270,23 @@ function uploadImages() {
             processData: false,
             index: count,
             
+            xhr: function() {
+                var i = this.index;
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', function(event) {
+                        var percent = 0;
+                        var position = event.loaded || event.position; /*event.position is deprecated*/
+                        var total = event.total;
+                        if (event.lengthComputable) {
+                            percent = Math.ceil(position / total * 100);
+                            forms[i].getElementsByClassName("progress")[0].innerHTML = percent + "%";
+                        }                    
+                    }, false);
+                }
+                return xhr;
+            },
+            
             success: function(data) {
                 var i = this.index;
                 if (i + 1 == forms.length) {
@@ -278,10 +295,11 @@ function uploadImages() {
                 } else {
                     document.getElementById("message-box").innerHTML = "Uploading Images (" + (i+1).toString() + "/" + forms.length.toString() + ")..."
                 }
+                
+                forms[i].getElementsByClassName("progress")[0].innerHTML = "";
+                forms[i].getElementsByTagName("input")[0].value = "";
             }
         });
-    
-    forms[count].getElementsByTagName("input")[0].value = "";
     
     }
 }
