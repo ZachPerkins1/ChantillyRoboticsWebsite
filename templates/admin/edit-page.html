@@ -43,7 +43,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-
+        var page = "{{ data['page_name'] }}"
         var texts = {}
         {% for text in data["texts"] %}
             texts["{{ text['name'] }}"]= {"data":"{{ jsescape(text['data']) }}", "display":"{{ jsescape(text['display']) }}"}

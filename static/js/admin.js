@@ -248,8 +248,46 @@ function updateLocal() {
 function save(page) {
     if (confirm("Are you sure that you want to save? There is no way to revert after these changes are made.")) {
         updateLocal();
+        uploadImages();
+    }
+}
+    
+function uploadImages() {
+    var forms = document.getElementsByClassName("image-upload");
+    document.getElementById("message-box").innerHTML = "Uploading (1/" + forms.length + ")...";
         
-        var tmpList = {};
+    for (var count = 0; count < forms.length; count++) {
+        console.log(count)
+        
+        $.ajax({
+            url: $SCRIPT_ROOT + "/admin/upload-image",
+            type: 'POST',
+    
+            data: new FormData(forms[count]),
+    
+            cache: false,
+            contentType: false,
+            processData: false,
+            index: count,
+            
+            success: function(data) {
+                var i = this.index;
+                if (i + 1 == forms.length) {
+                    document.getElementById("message-box").innerHTML = "Saving...";
+                    saveData();
+                } else {
+                    document.getElementById("message-box").innerHTML = "Uploading Images (" + (i+1).toString() + "/" + forms.length.toString() + ")..."
+                }
+            }
+        });
+    
+    forms[count].getElementsByTagName("input")[0].value = "";
+    
+    }
+}
+
+function saveData() {
+    var tmpList = {};
         for (var item in window.lists) {
             tmpList[item] = {};
             for (var variable in window.lists[item]) {
@@ -259,9 +297,6 @@ function save(page) {
             }
         }
         
-        document.getElementById("message-box").innerHTML = "Uploading Images...";
-        uploadImages();
-        
         document.getElementById("message-box").innerHTML = "Saving...";
         
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
@@ -269,35 +304,9 @@ function save(page) {
                 list: JSON.stringify(tmpList),
                 text: JSON.stringify(window.texts),
                 image: JSON.stringify(window.images),
-                page_name: page,
-                test: "hello"
+                page_name: window.page
             },
             success: function(data){
                 document.getElementById("message-box").innerHTML = "Saved.";
             }, dataType: "json", type: "post"});
-    }
-}
-    
-function uploadImages() {
-    var forms = document.getElementsByClassName("image-upload");
-    var progressBars = document.getElementsByClassName("progress");
-    
-        
-    for (var i = 0; i < forms.length; i++) {
-        console.log(i)
-        
-        $.ajax({
-            url: $SCRIPT_ROOT + "/admin/upload-image",
-            type: 'POST',
-    
-            data: new FormData(forms[i]),
-    
-            cache: false,
-            contentType: false,
-            processData: false,
-        });
-    
-    forms[i].getElementsByTagName("input")[0].value = "";
-    
-    }
 }
