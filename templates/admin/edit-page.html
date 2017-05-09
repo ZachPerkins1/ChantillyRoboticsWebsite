@@ -61,7 +61,7 @@
                         {{ ',' if loop.index > 1 else '' }}
                         "{{ jsescape(entry) }}"
                     {%- endfor %}
-                ], "display":"{{ jsescape(var['display']) }}"}
+                ], "display":"{{ jsescape(var['display']) }}", "type":"{{ jsescape(var['type']) }}"}
             {% endfor %}
             lists["{{ list['name'] }}"]["_count"] = {{ list["count"] }}
             lists["{{ list['name'] }}"]["_display"] ="{{ list['display'] }}"

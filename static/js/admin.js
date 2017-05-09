@@ -15,6 +15,7 @@ function makeTable(listName) {
             if (name.charAt(0) != "_") {
                 variables[name] = {};
                 variables[name]["display"] = lists[listName][name]["display"];
+                variables[name]["type"] = lists[listName][name]["type"];
                 variables[name]["data"] = lists[listName][name]["data"][x];
             }   
         }
@@ -111,13 +112,31 @@ function addItem(listName, variables, isNew, num) {
     dt.appendChild(inner);
     for (var variable in variables) {
         var row = document.createElement("tr");
-        var textarea = document.createElement("textarea");
-        textarea.appendChild(document.createTextNode(variables[variable]["data"]));
                 
         var def = document.createElement("td");
         var data = document.createElement("td");
+        
+        console.log(variables[variable]["type"]);
+        
+        
+        if (variables[variable]["type"] == "text") {
+            var textarea = document.createElement("textarea");
+            textarea.appendChild(document.createTextNode(variables[variable]["data"]));
+            data.appendChild(textarea);
+        } else if (variables[variable]["type"] == "image") {
+            var form = document.createElement("form");
+            form.className = "image-upload";
+            form.setAttribute("enc-type", "multipart/form-data");
+            var selector = document.createElement("input");
+            selector.setAttribute("type", "file");
+            selector.setAttribute("name", "file");
+            var span = document.createElement("span");
+            span.className = "progress";
+            form.appendChild(selector);
+            form.appendChild(span);
+            data.appendChild(form);
+        }
                 
-        data.appendChild(textarea);
         def.appendChild(document.createTextNode(variables[variable]["display"]));
                 
         row.appendChild(def);
@@ -164,6 +183,7 @@ function addItemEmpty(listName) {
         if (name.charAt(0) != "_") {
             variables[name] = {};
             variables[name]["display"] = lists[listName][name]["display"];
+            variables[name]["type"] = lists[listName][name]["type"];
             variables[name]["data"] = "";
         }   
     }
@@ -231,12 +251,15 @@ function updateLocal() {
         for (var variable in lists[list]) {
             if (variable.charAt(0) != "_") {
                 lists[list][variable]["data"] = [];
-                for (var j = 0; j < divs.length; j++) {
-                    var inputs = divs[j].getElementsByTagName("textarea");
-                    lists[list][variable]["data"].push(inputs[x].value);
-                }
                 
-                x++;
+                if (lists[list][variable]["type"] == "text") {
+                    for (var j = 0; j < divs.length; j++) {
+                        var inputs = divs[j].getElementsByTagName("textarea");
+                        lists[list][variable]["data"].push(inputs[x].value);
+                    }
+                    
+                    x++;
+                }
             }
         }
         
@@ -298,6 +321,8 @@ function uploadImages() {
                 
                 forms[i].getElementsByClassName("progress")[0].innerHTML = "";
                 forms[i].getElementsByTagName("input")[0].value = "";
+
+                forms[i].setAttribute("filename", data.filename)
             }
         });
     

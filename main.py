@@ -123,6 +123,8 @@ def getData(page, name):
                 list["data"][i] = list["data"][i].decode("UTF-8")
             if "display" in list:
                 list["display"] = list["display"].decode("UTF-8")
+            if "type" in list:
+                list["type"] = list["type"].decode("UTF-8")
             name_data["data"].append(list)
             min_count = min(min_count, len(list["data"]))
         
@@ -209,7 +211,7 @@ def gen_site():
                 for var in vars:
                     r.sadd(page_name + ":list_index:" + name, var.get("name"))
                     r.hmset(page_name + ":lists:" + name + ":" + var.get("name"), var.attrib)
-        
+
         for name in r.smembers(page_name + ":name_index"):
             if name not in names:
                 r.srem(page_name + ":name_index", name)
@@ -270,12 +272,8 @@ def save():
     images = json.loads(request.form.get("image"))
     page = request.form.get("page_name")
     print lists
-    #test = request.form.get("test", "", type=str)
-    
-   # print test
 
     print page
-    
 
     for name in texts:
         r.hmset(page + ":names:" + name, texts[name])
