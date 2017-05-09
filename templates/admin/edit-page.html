@@ -48,6 +48,10 @@
         {% for text in data["texts"] %}
             texts["{{ text['name'] }}"]= {"data":"{{ jsescape(text['data']) }}", "display":"{{ jsescape(text['display']) }}"}
         {% endfor %}
+        var images = {}
+        {% for image in data["images"] %}
+            images["{{ image['name'] }}"]= {"data":"{{ jsescape(image['data']) }}", "display":"{{ jsescape(image['display']) }}"}
+        {% endfor %}
         var lists = {}
         {% for list in data["lists"] %}
             lists["{{ list['name'] }}"] = {}
@@ -81,12 +85,15 @@
         </div>
         <br/>
         <br/>
+        <div id="images">
         <h3>Images</h3>
-        Name:<br/>
-        <textarea name="" class="image" form="edit-page"></textarea>
-        <br/>
-        <br/>
-        
+        {% for image in data["images"] %}
+            {{ image["display"] }}: <form enctype="multipart/form-data" class="image-upload"><input name="file" type="file" /><span class="progress"></span></form>
+            <br/>
+            <br/>
+        {% endfor %}
+        </div>
+
         <button onclick="save('{{ data['page_name'] }}')">Save</button>
         <button>View Preview</button>
         <div id="message-box"></div>

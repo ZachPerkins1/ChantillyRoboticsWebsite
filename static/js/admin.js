@@ -203,6 +203,7 @@ function start() {
 function updateLocal() {
     var texts = window.texts;
     var lists = window.lists;
+    var images = window.images;
     
     var textSection = document.getElementById("texts").getElementsByTagName("textarea");
     
@@ -210,7 +211,15 @@ function updateLocal() {
     for (var text in texts) {
         texts[text]["data"] = textSection[k].value;
         k++;
-    } 
+    }
+    
+    /*var imageSection = document.getElementById("images").getElementsByTagName("textarea");
+    
+    k = 0;
+    for (var image in images) {
+        images[image]["data"] = imageSection[k].value;
+        k++;
+    } */
     
     var listSection = document.getElementById("lists").getElementsByClassName("list-selection");
     
@@ -250,17 +259,45 @@ function save(page) {
             }
         }
         
-        document.getElementById("message-box").innerHTML = "Saving..."
+        document.getElementById("message-box").innerHTML = "Uploading Images...";
+        uploadImages();
+        
+        document.getElementById("message-box").innerHTML = "Saving...";
         
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
             data: {
                 list: JSON.stringify(tmpList),
                 text: JSON.stringify(window.texts),
+                image: JSON.stringify(window.images),
                 page_name: page,
                 test: "hello"
             },
             success: function(data){
                 document.getElementById("message-box").innerHTML = "Saved.";
             }, dataType: "json", type: "post"});
+    }
+}
+    
+function uploadImages() {
+    var forms = document.getElementsByClassName("image-upload");
+    var progressBars = document.getElementsByClassName("progress");
+    
+        
+    for (var i = 0; i < forms.length; i++) {
+        console.log(i)
+        
+        $.ajax({
+            url: $SCRIPT_ROOT + "/admin/upload-image",
+            type: 'POST',
+    
+            data: new FormData(forms[i]),
+    
+            cache: false,
+            contentType: false,
+            processData: false,
+        });
+    
+    forms[i].getElementsByTagName("input")[0].value = "";
+    
     }
 }
