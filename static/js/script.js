@@ -1,15 +1,4 @@
 $(document).ready(function(){
-  /*if($("#about-first").length!=0){ //So it only runs on the one page
-    //Hide all subtitle contents at first
-    $(".content-box").find("p").next().hide();
-    //show contents when headers are clicked
-    $(".subtitle").click(function() {
-      $(this).next().slideToggle(300);
-    });
-  }*/
-  //Note: The load functions will not load local files in Chrome, Internet Explorer, or Edge.
-  //They should work when the files are remote hosted though.
-  //If you want to see the header and footer loaded on local, use Firefox.
   function setCountdownTimer(end) {
     var elapsed = end - new Date().getTime();
     if(elapsed <= 0) {
@@ -36,10 +25,6 @@ $(document).ready(function(){
       }
     }
   }
-
-  var endDate = new Date("Apr 07, 2017 10:59:59").getTime();
-  //  new Date().getTime() + (3 * 1000) + 3000;
-
   //Do it once so it doesn't start empty
   setCountdownTimer(endDate);
   var resetTime = setInterval(function(){

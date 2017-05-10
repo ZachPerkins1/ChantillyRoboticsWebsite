@@ -7,7 +7,8 @@
                 <span id="hours"></span>
                 <span id="minutes"></span>
                 <span id="seconds"></span><br/>
-                <editable type="text" name="countdown_desc"/>
+                until {{ data["events"][0]["name"] }}!
+                <script>var endDate = new Date("{{ data['events'][0]['date'] }}").getTime();</script>
             </p>
         </div>
     </div>
