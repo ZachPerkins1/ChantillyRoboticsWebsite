@@ -19,7 +19,7 @@ app = Flask(__name__)
 r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password="8fb344199bbb94235135457306928ef0")
 
 app.config['SECRET_KEY'] = "hard to guess string"
-app.config['UPLOAD_FOLDER'] = "images/"
+app.config['UPLOAD_FOLDER'] = "static/usr_img/"
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
 
@@ -94,7 +94,7 @@ def gen_image_tag(attr, cname):
     Returns:
         The new <img/> tag as a string.
     """
-    text = "<img src=\"{{ " + cname + " }}\""
+    text = "<img src=\"{{ url_for('static', filename='usr_img/' + " + cname + ") }}\""
     r = dict(attr)
     del r["name"]
     del r["type"]
@@ -147,7 +147,10 @@ def process_list(content, e):
         name = var.get("name")
         if type == "text":
             line = var._start_line_number - 1
-            content[line] = replace_tag("var", content[line], "{{ item[\"" + name + "\"] }}")
+            content[line] = replace_tag("var", content[line], "{{ item['" + name + "'] }}")
+        elif type == "image":
+            line = var._start_line_number - 1
+            content[line] = replace_tag("var", content[line], gen_image_tag(var.attrib, "item['" + name + "']"))
 
     return vars
 
@@ -368,7 +371,9 @@ def upload():
                     r.set("images:" + name, hash_new)
                     
             
-            return jsonify(name=uploaded_file_path)
+            return jsonify(filename=filename)
+        else:
+            return jsonify(filename="")
 
 print "Server Starting..."
 gen_site()

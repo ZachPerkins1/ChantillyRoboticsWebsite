@@ -132,8 +132,11 @@ function addItem(listName, variables, isNew, num) {
             selector.setAttribute("name", "file");
             var span = document.createElement("span");
             span.className = "progress";
+            var placeholder = document.createElement("textarea");
+            placeholder.className = "image-placeholder";
             form.appendChild(selector);
             form.appendChild(span);
+            form.appendChild(placeholder);
             data.appendChild(form);
         }
                 
@@ -230,16 +233,18 @@ function updateLocal() {
     var k = 0;
     for (var text in texts) {
         texts[text]["data"] = textSection[k].value;
+        console.log("test");
         k++;
     }
     
-    /*var imageSection = document.getElementById("images").getElementsByTagName("textarea");
+    var imageSection = document.getElementById("images").getElementsByTagName("textarea");
     
     k = 0;
     for (var image in images) {
+        console.log(imageSection[k].value);
         images[image]["data"] = imageSection[k].value;
         k++;
-    } */
+    } 
     
     var listSection = document.getElementById("lists").getElementsByClassName("list-selection");
     
@@ -251,15 +256,12 @@ function updateLocal() {
         for (var variable in lists[list]) {
             if (variable.charAt(0) != "_") {
                 lists[list][variable]["data"] = [];
-                
-                if (lists[list][variable]["type"] == "text") {
-                    for (var j = 0; j < divs.length; j++) {
-                        var inputs = divs[j].getElementsByTagName("textarea");
-                        lists[list][variable]["data"].push(inputs[x].value);
-                    }
-                    
-                    x++;
+                for (var j = 0; j < divs.length; j++) {
+                    var inputs = divs[j].getElementsByTagName("textarea");
+                    lists[list][variable]["data"].push(inputs[x].value);
                 }
+                
+                x++;
             }
         }
         
@@ -270,7 +272,6 @@ function updateLocal() {
 
 function save(page) {
     if (confirm("Are you sure that you want to save? There is no way to revert after these changes are made.")) {
-        updateLocal();
         uploadImages();
     }
 }
@@ -312,17 +313,22 @@ function uploadImages() {
             
             success: function(data) {
                 var i = this.index;
+                
+                forms[i].getElementsByClassName("progress")[0].innerHTML = "";
+                forms[i].getElementsByTagName("input")[0].value = "";
+                
+                if (data.filename != "") {
+                    forms[i].getElementsByClassName("image-placeholder")[0].value = data.filename;
+                    console.log(data.filename);
+                }
+                
                 if (i + 1 == forms.length) {
                     document.getElementById("message-box").innerHTML = "Saving...";
+                    updateLocal();
                     saveData();
                 } else {
                     document.getElementById("message-box").innerHTML = "Uploading Images (" + (i+1).toString() + "/" + forms.length.toString() + ")..."
                 }
-                
-                forms[i].getElementsByClassName("progress")[0].innerHTML = "";
-                forms[i].getElementsByTagName("input")[0].value = "";
-
-                forms[i].setAttribute("filename", data.filename)
             }
         });
     
@@ -342,6 +348,7 @@ function saveData() {
         
         document.getElementById("message-box").innerHTML = "Saving...";
         
+        console.log("one");
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
             data: {
                 list: JSON.stringify(tmpList),
