@@ -134,6 +134,7 @@ function addItem(listName, variables, isNew, num) {
             span.className = "progress";
             var placeholder = document.createElement("textarea");
             placeholder.className = "image-placeholder";
+            placeholder.value = variables[variable]["data"];
             form.appendChild(selector);
             form.appendChild(span);
             form.appendChild(placeholder);
@@ -259,6 +260,7 @@ function updateLocal() {
                 for (var j = 0; j < divs.length; j++) {
                     var inputs = divs[j].getElementsByTagName("textarea");
                     lists[list][variable]["data"].push(inputs[x].value);
+                    console.log(inputs[x].value);
                 }
                 
                 x++;

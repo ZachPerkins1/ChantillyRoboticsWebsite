@@ -265,6 +265,8 @@ def edit_page(page):
         "images": images,
         "page_name": page
     }
+    
+    print lists
 
     return render_template("admin/edit-page.html", data=page_data)
     
