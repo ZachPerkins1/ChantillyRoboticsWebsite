@@ -116,8 +116,6 @@ function addItem(listName, variables, isNew, num) {
         var def = document.createElement("td");
         var data = document.createElement("td");
         
-        console.log(variables[variable]["type"]);
-        
         
         if (variables[variable]["type"] == "text") {
             var textarea = document.createElement("textarea");
@@ -234,7 +232,6 @@ function updateLocal() {
     var k = 0;
     for (var text in texts) {
         texts[text]["data"] = textSection[k].value;
-        console.log("test");
         k++;
     }
     
@@ -242,7 +239,6 @@ function updateLocal() {
     
     k = 0;
     for (var image in images) {
-        console.log(imageSection[k].value);
         images[image]["data"] = imageSection[k].value;
         k++;
     } 
@@ -260,7 +256,6 @@ function updateLocal() {
                 for (var j = 0; j < divs.length; j++) {
                     var inputs = divs[j].getElementsByTagName("textarea");
                     lists[list][variable]["data"].push(inputs[x].value);
-                    console.log(inputs[x].value);
                 }
                 
                 x++;
@@ -283,8 +278,6 @@ function uploadImages() {
     document.getElementById("message-box").innerHTML = "Uploading (1/" + forms.length + ")...";
         
     for (var count = 0; count < forms.length; count++) {
-        console.log(count)
-        
         $.ajax({
             url: $SCRIPT_ROOT + "/admin/upload-image",
             type: 'POST',
@@ -321,7 +314,6 @@ function uploadImages() {
                 
                 if (data.filename != "") {
                     forms[i].getElementsByClassName("image-placeholder")[0].value = data.filename;
-                    console.log(data.filename);
                 }
                 
                 if (i + 1 == forms.length) {
@@ -350,7 +342,6 @@ function saveData() {
         
         document.getElementById("message-box").innerHTML = "Saving...";
         
-        console.log("one");
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
             data: {
                 list: JSON.stringify(tmpList),

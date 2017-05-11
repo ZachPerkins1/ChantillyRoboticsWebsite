@@ -110,7 +110,7 @@ def gen_image_tag(attr, cname):
     return text
     
 
-def getData(page, name):
+def get_data(page, name):
     name_data = r.hgetall(page + ":names:" + name)
 
     if name_data["type"] == "list":
@@ -251,7 +251,7 @@ def edit_page(page):
     images = []
 
     for name in names:
-        name_data = getData(page, name)
+        name_data = get_data(page, name)
         if name_data["type"] == "text":
             texts.append(name_data)
         elif name_data["type"] == "list":
@@ -266,8 +266,6 @@ def edit_page(page):
         "page_name": page
     }
     
-    print lists
-
     return render_template("admin/edit-page.html", data=page_data)
     
 @app.route("/admin/save-data", methods=['POST'])
@@ -276,9 +274,6 @@ def save():
     texts = json.loads(request.form.get("text"))
     images = json.loads(request.form.get("image"))
     page = request.form.get("page_name")
-    print lists
-
-    print page
 
     for name in texts:
         r.hmset(page + ":names:" + name, texts[name])
@@ -306,7 +301,7 @@ def default(path):
         data = {}
         names = r.smembers(path+ ":name_index")
         for name in names:
-            name_data = getData(path, name)
+            name_data = get_data(path, name)
             if name_data["type"] == "text" or name_data["type"] == "image":
                 data[name] = name_data["data"]
             if name_data["type"] == "list":
@@ -315,7 +310,6 @@ def default(path):
                     item = {}
                     x = 0
                     for var in name_data["data"]:
-                        print name_data["data"][x]
                         item[var["name"]] = name_data["data"][x]["data"][i]
                         x += 1
                         
@@ -326,8 +320,6 @@ def default(path):
            
         data["page"] = path
         
-        print data
-            
         return render_template("gen/" + path + ".html", data=data)
         
     else:
