@@ -3,17 +3,25 @@ import re
 import os
 import math
 import json
+import hashlib
 
 sys.modules['_elementtree'] = None
 
 from flask import Flask, render_template, request, jsonify
+from werkzeug.utils import secure_filename
 import flask
 import xml.etree.ElementTree as et
 import redis
 from os import listdir
+from os.path import splitext
 
 app = Flask(__name__)
 r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password="8fb344199bbb94235135457306928ef0")
+
+app.config['SECRET_KEY'] = "hard to guess string"
+app.config['UPLOAD_FOLDER'] = "static/usr_img/"
+
+ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
 
 app.jinja_env.autoescape = False
 
@@ -34,6 +42,34 @@ class LineNumberingParser(et.XMLParser):
         element._end_byte_index = self.parser.CurrentByteIndex
         return element
 
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+    
+    
+def gen_file_name(filename):
+    i = 0
+    name, ext = splitext(filename)
+    
+    filename = name + "_" + str(i) + ext
+    while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+        i += 1
+        filename = name + "_" + str(i) + ext
+    
+    return filename
+    
+    
+def allowed_file(filename):
+    for ext in ALLOWED_EXTENSIONS:
+        if ext in filename:
+            return True
+    return False
+    
+    
 
 def replace_tag(tag, line, replacement):
     """Replaces an HTML tag (such as <editable> or <var/>) in the given content with the given replacement.
@@ -58,7 +94,7 @@ def gen_image_tag(attr, cname):
     Returns:
         The new <img/> tag as a string.
     """
-    text = "<img src=\"{{ " + cname + " }}\""
+    text = "<img src=\"{{ url_for('static', filename='usr_img/' + " + cname + ") }}\""
     r = dict(attr)
     del r["name"]
     del r["type"]
@@ -87,6 +123,8 @@ def getData(page, name):
                 list["data"][i] = list["data"][i].decode("UTF-8")
             if "display" in list:
                 list["display"] = list["display"].decode("UTF-8")
+            if "type" in list:
+                list["type"] = list["type"].decode("UTF-8")
             name_data["data"].append(list)
             min_count = min(min_count, len(list["data"]))
         
@@ -109,7 +147,10 @@ def process_list(content, e):
         name = var.get("name")
         if type == "text":
             line = var._start_line_number - 1
-            content[line] = replace_tag("var", content[line], "{{ item[\"" + name + "\"] }}")
+            content[line] = replace_tag("var", content[line], "{{ item['" + name + "'] }}")
+        elif type == "image":
+            line = var._start_line_number - 1
+            content[line] = replace_tag("var", content[line], gen_image_tag(var.attrib, "item['" + name + "']"))
 
     return vars
 
@@ -173,7 +214,7 @@ def gen_site():
                 for var in vars:
                     r.sadd(page_name + ":list_index:" + name, var.get("name"))
                     r.hmset(page_name + ":lists:" + name + ":" + var.get("name"), var.attrib)
-        
+
         for name in r.smembers(page_name + ":name_index"):
             if name not in names:
                 r.srem(page_name + ":name_index", name)
@@ -207,6 +248,7 @@ def edit_page(page):
     names = r.smembers(page + ":name_index")
     lists = []
     texts = []
+    images = []
 
     for name in names:
         name_data = getData(page, name)
@@ -214,12 +256,17 @@ def edit_page(page):
             texts.append(name_data)
         elif name_data["type"] == "list":
             lists.append(name_data)
+        elif name_data["type"] == "image":
+            images.append(name_data)            
 
     page_data = {
         "lists": lists,
         "texts": texts,
+        "images": images,
         "page_name": page
     }
+    
+    print lists
 
     return render_template("admin/edit-page.html", data=page_data)
     
@@ -227,16 +274,16 @@ def edit_page(page):
 def save():
     lists = json.loads(request.form.get("list"))
     texts = json.loads(request.form.get("text"))
+    images = json.loads(request.form.get("image"))
     page = request.form.get("page_name")
     print lists
-    #test = request.form.get("test", "", type=str)
-    
-   # print test
 
     print page
 
     for name in texts:
-        r.hmset(page + ":names:" + name, texts[name]) 
+        r.hmset(page + ":names:" + name, texts[name])
+    for name in images:
+        r.hmset(page + ":names:" + name, images[name])         
     for name in lists:
         for var in lists[name]:
             r.delete(page + ":lists:" + name + ":" + var + ":data")
@@ -260,7 +307,7 @@ def default(path):
         names = r.smembers(path+ ":name_index")
         for name in names:
             name_data = getData(path, name)
-            if name_data["type"] == "text":
+            if name_data["type"] == "text" or name_data["type"] == "image":
                 data[name] = name_data["data"]
             if name_data["type"] == "list":
                 lists = []
@@ -282,8 +329,58 @@ def default(path):
         print data
             
         return render_template("gen/" + path + ".html", data=data)
+        
     else:
         return render_template("blocks/not-found.html"), 404
+
+
+@app.route("/admin/upload-image", methods=['POST'])
+def upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        
+        uploaded_file_path = None
+
+        if file:
+            filename = secure_filename(file.filename)
+            filename = gen_file_name(filename)
+            mime_type = file.content_type
+
+            if not allowed_file(file.filename):
+                #result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+                pass
+
+            else:
+                # save file to disk
+                name, ext = splitext(filename)
+                temp_name = "temp" + ext
+                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], temp_name)
+                file.save(uploaded_file_path)
+                
+                hash_new = md5(uploaded_file_path)
+                
+                found = False
+                images = r.smembers("image_index")
+                for image in images:
+                    if r.get("images:" + image) == hash_new:
+                        filename = image + ext
+                        os.remove(uploaded_file_path)
+                        found = True
+                        break
+                
+                temp_file_path = uploaded_file_path
+                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                
+                if not found:
+                    os.rename(temp_file_path, uploaded_file_path)
+                    r.sadd("image_index", name)
+                    r.set("images:" + name, hash_new)
+                    
+            
+            return jsonify(filename=filename)
+        else:
+            return jsonify(filename="")
+
 
 print "Server Starting..."
 gen_site()

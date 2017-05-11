@@ -33,6 +33,10 @@
             height: 15px;
         }
         
+        .image-placeholder {
+            display: none;
+        }
+        
         table td {
             vertical-align: top;
         }
@@ -43,10 +47,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-
+        var page = "{{ data['page_name'] }}"
         var texts = {}
         {% for text in data["texts"] %}
             texts["{{ text['name'] }}"]= {"data":"{{ jsescape(text['data']) }}", "display":"{{ jsescape(text['display']) }}"}
+        {% endfor %}
+        var images = {}
+        {% for image in data["images"] %}
+            images["{{ image['name'] }}"]= {"data":"{{ jsescape(image['data']) }}", "display":"{{ jsescape(image['display']) }}"}
         {% endfor %}
         var lists = {}
         {% for list in data["lists"] %}
@@ -57,7 +65,7 @@
                         {{ ',' if loop.index > 1 else '' }}
                         "{{ jsescape(entry) }}"
                     {%- endfor %}
-                ], "display":"{{ jsescape(var['display']) }}"}
+                ], "display":"{{ jsescape(var['display']) }}", "type":"{{ jsescape(var['type']) }}"}
             {% endfor %}
             lists["{{ list['name'] }}"]["_count"] = {{ list["count"] }}
             lists["{{ list['name'] }}"]["_display"] ="{{ list['display'] }}"
@@ -81,12 +89,16 @@
         </div>
         <br/>
         <br/>
+        <div id="images">
         <h3>Images</h3>
-        Name:<br/>
-        <textarea name="" class="image" form="edit-page"></textarea>
-        <br/>
-        <br/>
-        
+        {% for image in data["images"] %}
+            {{ image["display"] }}: <form enctype="multipart/form-data" class="image-upload"><input name="file" type="file" />   <span class="progress"></span>
+            <textarea class="image-placeholder">{{ image["data"] }}</textarea></form>
+            <br/>
+            <br/>
+        {% endfor %}
+        </div>
+
         <button onclick="save('{{ data['page_name'] }}')">Save</button>
         <button>View Preview</button>
         <div id="message-box"></div>

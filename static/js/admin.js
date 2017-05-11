@@ -15,6 +15,7 @@ function makeTable(listName) {
             if (name.charAt(0) != "_") {
                 variables[name] = {};
                 variables[name]["display"] = lists[listName][name]["display"];
+                variables[name]["type"] = lists[listName][name]["type"];
                 variables[name]["data"] = lists[listName][name]["data"][x];
             }   
         }
@@ -111,13 +112,35 @@ function addItem(listName, variables, isNew, num) {
     dt.appendChild(inner);
     for (var variable in variables) {
         var row = document.createElement("tr");
-        var textarea = document.createElement("textarea");
-        textarea.appendChild(document.createTextNode(variables[variable]["data"]));
                 
         var def = document.createElement("td");
         var data = document.createElement("td");
+        
+        console.log(variables[variable]["type"]);
+        
+        
+        if (variables[variable]["type"] == "text") {
+            var textarea = document.createElement("textarea");
+            textarea.appendChild(document.createTextNode(variables[variable]["data"]));
+            data.appendChild(textarea);
+        } else if (variables[variable]["type"] == "image") {
+            var form = document.createElement("form");
+            form.className = "image-upload";
+            form.setAttribute("enc-type", "multipart/form-data");
+            var selector = document.createElement("input");
+            selector.setAttribute("type", "file");
+            selector.setAttribute("name", "file");
+            var span = document.createElement("span");
+            span.className = "progress";
+            var placeholder = document.createElement("textarea");
+            placeholder.className = "image-placeholder";
+            placeholder.value = variables[variable]["data"];
+            form.appendChild(selector);
+            form.appendChild(span);
+            form.appendChild(placeholder);
+            data.appendChild(form);
+        }
                 
-        data.appendChild(textarea);
         def.appendChild(document.createTextNode(variables[variable]["display"]));
                 
         row.appendChild(def);
@@ -164,6 +187,7 @@ function addItemEmpty(listName) {
         if (name.charAt(0) != "_") {
             variables[name] = {};
             variables[name]["display"] = lists[listName][name]["display"];
+            variables[name]["type"] = lists[listName][name]["type"];
             variables[name]["data"] = "";
         }   
     }
@@ -203,12 +227,23 @@ function start() {
 function updateLocal() {
     var texts = window.texts;
     var lists = window.lists;
+    var images = window.images;
     
     var textSection = document.getElementById("texts").getElementsByTagName("textarea");
     
     var k = 0;
     for (var text in texts) {
         texts[text]["data"] = textSection[k].value;
+        console.log("test");
+        k++;
+    }
+    
+    var imageSection = document.getElementById("images").getElementsByTagName("textarea");
+    
+    k = 0;
+    for (var image in images) {
+        console.log(imageSection[k].value);
+        images[image]["data"] = imageSection[k].value;
         k++;
     } 
     
@@ -225,6 +260,7 @@ function updateLocal() {
                 for (var j = 0; j < divs.length; j++) {
                     var inputs = divs[j].getElementsByTagName("textarea");
                     lists[list][variable]["data"].push(inputs[x].value);
+                    console.log(inputs[x].value);
                 }
                 
                 x++;
@@ -238,9 +274,71 @@ function updateLocal() {
 
 function save(page) {
     if (confirm("Are you sure that you want to save? There is no way to revert after these changes are made.")) {
-        updateLocal();
+        uploadImages();
+    }
+}
+    
+function uploadImages() {
+    var forms = document.getElementsByClassName("image-upload");
+    document.getElementById("message-box").innerHTML = "Uploading (1/" + forms.length + ")...";
         
-        var tmpList = {};
+    for (var count = 0; count < forms.length; count++) {
+        console.log(count)
+        
+        $.ajax({
+            url: $SCRIPT_ROOT + "/admin/upload-image",
+            type: 'POST',
+    
+            data: new FormData(forms[count]),
+    
+            cache: false,
+            contentType: false,
+            processData: false,
+            index: count,
+            
+            xhr: function() {
+                var i = this.index;
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', function(event) {
+                        var percent = 0;
+                        var position = event.loaded || event.position; /*event.position is deprecated*/
+                        var total = event.total;
+                        if (event.lengthComputable) {
+                            percent = Math.ceil(position / total * 100);
+                            forms[i].getElementsByClassName("progress")[0].innerHTML = percent + "%";
+                        }                    
+                    }, false);
+                }
+                return xhr;
+            },
+            
+            success: function(data) {
+                var i = this.index;
+                
+                forms[i].getElementsByClassName("progress")[0].innerHTML = "";
+                forms[i].getElementsByTagName("input")[0].value = "";
+                
+                if (data.filename != "") {
+                    forms[i].getElementsByClassName("image-placeholder")[0].value = data.filename;
+                    console.log(data.filename);
+                }
+                
+                if (i + 1 == forms.length) {
+                    document.getElementById("message-box").innerHTML = "Saving...";
+                    updateLocal();
+                    saveData();
+                } else {
+                    document.getElementById("message-box").innerHTML = "Uploading Images (" + (i+1).toString() + "/" + forms.length.toString() + ")..."
+                }
+            }
+        });
+    
+    }
+}
+
+function saveData() {
+    var tmpList = {};
         for (var item in window.lists) {
             tmpList[item] = {};
             for (var variable in window.lists[item]) {
@@ -250,17 +348,17 @@ function save(page) {
             }
         }
         
-        document.getElementById("message-box").innerHTML = "Saving..."
+        document.getElementById("message-box").innerHTML = "Saving...";
         
+        console.log("one");
         $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
             data: {
                 list: JSON.stringify(tmpList),
                 text: JSON.stringify(window.texts),
-                page_name: page,
-                test: "hello"
+                image: JSON.stringify(window.images),
+                page_name: window.page
             },
             success: function(data){
                 document.getElementById("message-box").innerHTML = "Saved.";
             }, dataType: "json", type: "post"});
-    }
 }
