@@ -330,6 +330,10 @@ def default(path):
             
         return render_template("gen/" + path + ".html", data=data)
         
+    else:
+        return render_template("blocks/not-found.html"), 404
+
+
 @app.route("/admin/upload-image", methods=['POST'])
 def upload():
     if request.method == 'POST':
@@ -376,6 +380,7 @@ def upload():
             return jsonify(filename=filename)
         else:
             return jsonify(filename="")
+
 
 print "Server Starting..."
 gen_site()
