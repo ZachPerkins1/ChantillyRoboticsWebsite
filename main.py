@@ -1,19 +1,18 @@
 import sys
 import re
-import os
 import math
 import json
-import hashlib
+import redis
+import flask
+import os
+
+from flask import Flask, render_template, request, jsonify
+
+import xml.etree.ElementTree as et
+import image_manager as imanager
 
 sys.modules['_elementtree'] = None
 
-from flask import Flask, render_template, request, jsonify
-from werkzeug.utils import secure_filename
-import flask
-import xml.etree.ElementTree as et
-import redis
-from os import listdir
-from os.path import splitext
 
 app = Flask(__name__)
 r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password="8fb344199bbb94235135457306928ef0")
@@ -24,6 +23,8 @@ app.config['UPLOAD_FOLDER'] = "static/usr_img/"
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
 
 app.jinja_env.autoescape = False
+
+imanager.init(app.config['UPLOAD_FOLDER'], r)
 
 class LineNumberingParser(et.XMLParser):
     def _start_list(self, *args, **kwargs):
@@ -41,34 +42,6 @@ class LineNumberingParser(et.XMLParser):
         element._end_column_number = self.parser.CurrentColumnNumber
         element._end_byte_index = self.parser.CurrentByteIndex
         return element
-
-
-def md5(fname):
-    hash_md5 = hashlib.md5()
-    with open(fname, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
-    
-    
-def gen_file_name(filename):
-    i = 0
-    name, ext = splitext(filename)
-    
-    filename = name + "_" + str(i) + ext
-    while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
-        i += 1
-        filename = name + "_" + str(i) + ext
-    
-    return filename
-    
-    
-def allowed_file(filename):
-    for ext in ALLOWED_EXTENSIONS:
-        if ext in filename:
-            return True
-    return False
-    
     
 
 def replace_tag(tag, line, replacement):
@@ -160,7 +133,7 @@ def gen_site():
         This method is called before server startup.
     """
     print "Regenerating Templates..."
-    files = listdir("templates")
+    files = os.listdir("templates")
     files = [fn for fn in files if fn.endswith(".html")]
 
     r.delete("name_index")
@@ -330,48 +303,8 @@ def default(path):
 def upload():
     if request.method == 'POST':
         file = request.files['file']
-        
-        uploaded_file_path = None
-
-        if file:
-            filename = secure_filename(file.filename)
-            filename = gen_file_name(filename)
-            mime_type = file.content_type
-
-            if not allowed_file(file.filename):
-                #result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
-                pass
-
-            else:
-                # save file to disk
-                name, ext = splitext(filename)
-                temp_name = "temp" + ext
-                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], temp_name)
-                file.save(uploaded_file_path)
-                
-                hash_new = md5(uploaded_file_path)
-                
-                found = False
-                images = r.smembers("image_index")
-                for image in images:
-                    if r.get("images:" + image) == hash_new:
-                        filename = image + ext
-                        os.remove(uploaded_file_path)
-                        found = True
-                        break
-                
-                temp_file_path = uploaded_file_path
-                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                
-                if not found:
-                    os.rename(temp_file_path, uploaded_file_path)
-                    r.sadd("image_index", name)
-                    r.set("images:" + name, hash_new)
-                    
-            
-            return jsonify(filename=filename)
-        else:
-            return jsonify(filename="")
+        res = imanager.upload(file)
+        return jsonify(res)
 
 
 print "Server Starting..."
