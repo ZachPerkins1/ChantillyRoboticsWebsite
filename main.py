@@ -5,6 +5,7 @@ import json
 import redis
 import flask
 import os
+import types
 
 from flask import Flask, render_template, request, jsonify
 
@@ -25,7 +26,8 @@ ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
 app.jinja_env.autoescape = False
 
 imanager.init(app.config['UPLOAD_FOLDER'], r)
-
+dmanager.init(r)
+types.add_tags()
 
 @app.route("/admin/edit-page/<page>")
 def edit_page(page):

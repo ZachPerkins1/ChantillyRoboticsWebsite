@@ -174,8 +174,9 @@ def get_data(page, name):
             min_count = min(min_count, len(list["data"]))
         
         name_data["count"] = min_count
-    elif name_data["type"] == "text":
+    else:
         name_data["data"] = name_data["data"].decode("UTF-8")
+        
     name_data["display"] = name_data["display"].decode("UTF-8")
         
     return name_data
@@ -199,27 +200,3 @@ def process_list(page_name, content, e):
             
 
     return vars
-    
-def gen_image_tag(attr, cname):
-    """Generates an <img/> HTML tag from the given attribute, which is an image <editable> tag.
-
-    Params:
-        attr - the image <editable> attribute
-        cname - a string version of the attribute name, in the form data["name"]
-    Returns:
-        The new <img/> tag as a string.
-    """
-    text = "<img src=\"{{ url_for('static', filename='usr_img/' + " + cname + ") }}\""
-    r = dict(attr)
-    del r["name"]
-    del r["type"]
-    del r["display"]
-
-    if "alt" not in r:
-        r["alt"] = attr["display"]
-
-    for key in r:
-        text += " " + key + "=\"" + r[key] + "\""
-
-    text += ">"
-    return text
