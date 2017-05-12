@@ -1,3 +1,4 @@
 templates/gen/
 .idea/
 static/usr_img/
+*.pyc

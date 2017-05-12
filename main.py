@@ -1,29 +1,10 @@
-import sys
-import re
 import os
-import math
-import json
-import hashlib
-
-sys.modules['_elementtree'] = None
-
-from flask import Flask, render_template, request, jsonify
-from werkzeug.utils import secure_filename
-import flask
-import xml.etree.ElementTree as et
-import redis
 from os import listdir
-from os.path import splitext
-
-app = Flask(__name__)
-r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password="8fb344199bbb94235135457306928ef0")
-
-app.config['SECRET_KEY'] = "hard to guess string"
-app.config['UPLOAD_FOLDER'] = "static/usr_img/"
-
-ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
-
-app.jinja_env.autoescape = False
+import re
+import xml.etree.ElementTree as et
+from env import app, r
+# imports for webpage serving files
+import pagelink, editpage
 
 class LineNumberingParser(et.XMLParser):
     def _start_list(self, *args, **kwargs):
@@ -41,34 +22,6 @@ class LineNumberingParser(et.XMLParser):
         element._end_column_number = self.parser.CurrentColumnNumber
         element._end_byte_index = self.parser.CurrentByteIndex
         return element
-
-
-def md5(fname):
-    hash_md5 = hashlib.md5()
-    with open(fname, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
-    
-    
-def gen_file_name(filename):
-    i = 0
-    name, ext = splitext(filename)
-    
-    filename = name + "_" + str(i) + ext
-    while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
-        i += 1
-        filename = name + "_" + str(i) + ext
-    
-    return filename
-    
-    
-def allowed_file(filename):
-    for ext in ALLOWED_EXTENSIONS:
-        if ext in filename:
-            return True
-    return False
-    
     
 
 def replace_tag(tag, line, replacement):
@@ -79,7 +32,7 @@ def replace_tag(tag, line, replacement):
         line - the content in which to replace the tag
         replacement - the replacement string
     Returns:
-        The replacement tag as a string (?).
+        The replacement tag as a string
     """
     r = re.compile("<" + tag + "[^<]*(/>|>)")
     return re.sub(r, replacement, line)
@@ -108,38 +61,16 @@ def gen_image_tag(attr, cname):
 
     text += ">"
     return text
-    
-
-def get_data(page, name):
-    name_data = r.hgetall(page + ":names:" + name)
-
-    if name_data["type"] == "list":
-        name_data["data"] = []
-        min_count = sys.maxint
-        for var in r.smembers(page + ":list_index:" + name):
-            list = r.hgetall(page + ":lists:" + name + ":" + var)
-            list["data"] = r.lrange(page + ":lists:" + name + ":" + var + ":data", 0, -1)
-            for i in range(len(list["data"])):
-                list["data"][i] = list["data"][i].decode("UTF-8")
-            if "display" in list:
-                list["display"] = list["display"].decode("UTF-8")
-            if "type" in list:
-                list["type"] = list["type"].decode("UTF-8")
-            name_data["data"].append(list)
-            min_count = min(min_count, len(list["data"]))
-        
-        name_data["count"] = min_count
-    elif name_data["type"] == "text":
-        name_data["data"] = name_data["data"].decode("UTF-8")
-    name_data["display"] = name_data["display"].decode("UTF-8")
-        
-    return name_data
 
 
 def process_list(content, e):
-    """Processes a list. (Clarify!!).
-        This method replaces <var type="text"/> tags in the list with the appropriate Jinja expressions.
-        For some reason, images and lists are not supported.
+    """This function replaces <var/> tags in the given list with the appropriate Jinja expressions.
+
+    Params:
+        content - the list of file lines containing the list (will be modified)
+        e - the list <editable> tag
+    Returns:
+        A collection of objects representing <var/> tags in the list
     """
     vars = e.findall(".//var")
     for var in e.findall(".//var"):
@@ -157,7 +88,10 @@ def process_list(content, e):
 
 def gen_site():
     """Generates Jinja template files from front-end files in the home directory.
-        This method is called before server startup.
+        This function is called before server startup.
+
+    Returns:
+        None
     """
     print "Regenerating Templates..."
     files = listdir("templates")
@@ -238,140 +172,6 @@ def gen_site():
         with open(path, "w") as f:
             for line in content:
                 f.write(line)
-
-
-@app.route("/admin/edit-page/<page>")
-def edit_page(page):
-    """Generates and returns an "edit page" page for the given page.
-        Admins use these pages to add content to the website.
-    """
-    names = r.smembers(page + ":name_index")
-    lists = []
-    texts = []
-    images = []
-
-    for name in names:
-        name_data = get_data(page, name)
-        if name_data["type"] == "text":
-            texts.append(name_data)
-        elif name_data["type"] == "list":
-            lists.append(name_data)
-        elif name_data["type"] == "image":
-            images.append(name_data)            
-
-    page_data = {
-        "lists": lists,
-        "texts": texts,
-        "images": images,
-        "page_name": page
-    }
-    
-    return render_template("admin/edit-page.html", data=page_data)
-    
-@app.route("/admin/save-data", methods=['POST'])
-def save():
-    lists = json.loads(request.form.get("list"))
-    texts = json.loads(request.form.get("text"))
-    images = json.loads(request.form.get("image"))
-    page = request.form.get("page_name")
-
-    for name in texts:
-        r.hmset(page + ":names:" + name, texts[name])
-    for name in images:
-        r.hmset(page + ":names:" + name, images[name])         
-    for name in lists:
-        for var in lists[name]:
-            r.delete(page + ":lists:" + name + ":" + var + ":data")
-            for item in lists[name][var]["data"]:
-                r.rpush(page + ":lists:" + name + ":" + var + ":data", item)
-                
-    return jsonify(name="Hello")
-
-
-@app.route("/")
-def home():
-    """Renders the home page"""
-    return default("index")
-
-
-@app.route("/<path:path>")
-def default(path):
-    """The render function used for normal web pages on the site (such as the home page, About page, etc.)"""
-    if r.sismember("pages", path):
-        data = {}
-        names = r.smembers(path+ ":name_index")
-        for name in names:
-            name_data = get_data(path, name)
-            if name_data["type"] == "text" or name_data["type"] == "image":
-                data[name] = name_data["data"]
-            if name_data["type"] == "list":
-                lists = []
-                for i in range(name_data["count"]):
-                    item = {}
-                    x = 0
-                    for var in name_data["data"]:
-                        item[var["name"]] = name_data["data"][x]["data"][i]
-                        x += 1
-                        
-                    lists.append(item)
-                    
-                data[name] = lists
-                    
-           
-        data["page"] = path
-        
-        return render_template("gen/" + path + ".html", data=data)
-        
-    else:
-        return render_template("blocks/not-found.html"), 404
-
-
-@app.route("/admin/upload-image", methods=['POST'])
-def upload():
-    if request.method == 'POST':
-        file = request.files['file']
-        
-        uploaded_file_path = None
-
-        if file:
-            filename = secure_filename(file.filename)
-            filename = gen_file_name(filename)
-            mime_type = file.content_type
-
-            if not allowed_file(file.filename):
-                #result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
-                pass
-
-            else:
-                # save file to disk
-                name, ext = splitext(filename)
-                temp_name = "temp" + ext
-                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], temp_name)
-                file.save(uploaded_file_path)
-                
-                hash_new = md5(uploaded_file_path)
-                
-                found = False
-                images = r.smembers("image_index")
-                for image in images:
-                    if r.get("images:" + image) == hash_new:
-                        filename = image + ext
-                        os.remove(uploaded_file_path)
-                        found = True
-                        break
-                
-                temp_file_path = uploaded_file_path
-                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                
-                if not found:
-                    os.rename(temp_file_path, uploaded_file_path)
-                    r.sadd("image_index", name)
-                    r.set("images:" + name, hash_new)
-                    
-            
-            return jsonify(filename=filename)
-        else:
-            return jsonify(filename="")
 
 
 print "Server Starting..."
