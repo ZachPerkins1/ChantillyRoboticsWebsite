@@ -5,7 +5,7 @@ import json
 import redis
 import flask
 import os
-import types
+from datatypes import add_tags
 
 from flask import Flask, render_template, request, jsonify
 
@@ -23,11 +23,12 @@ app.config['UPLOAD_FOLDER'] = "static/usr_img/"
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
 
+
 app.jinja_env.autoescape = False
 
 imanager.init(app.config['UPLOAD_FOLDER'], r)
 dmanager.init(r)
-types.add_tags()
+add_tags()
 
 @app.route("/admin/edit-page/<page>")
 def edit_page(page):
@@ -36,17 +37,26 @@ def edit_page(page):
     """
     names = r.smembers(page + ":name_index")
     data = {}
+    lists = []
+    displays = {}
     
     for key in dmanager.get_tags():
         data[key] = []
+        displays[key] = dmanager._datatypes[key].return_display_name()
 
     for name in names:
         name_data = dmanager.get_data(page, name)
-        data[name_data["type"]].append(name_data)
+        if name_data["type"] == "list":
+            lists.append(name_data)
+            print name_data
+        else:
+            data[name_data["type"]].append(name_data)
 
     page_data = {
         "data": data,
-        "page_name": page
+        "display_names": displays,
+        "page_name": page,
+        "list_elements": lists
     }
     
     return render_template("admin/edit-page.html", data=page_data)
@@ -119,5 +129,5 @@ def upload():
 
 
 print "Server Starting..."
-gen_site()
+dmanager.gen_site()
 app.run(debug=True, port=int(os.getenv('PORT', '8080')), host=os.getenv('IP', '0.0.0.0'))

@@ -43,7 +43,7 @@ class Image(Tag):
         return "image"
         
     def return_display_name(self):
-        return "Images"
+        return "Image"
         
     def can_be_in_list(self):
         return True
