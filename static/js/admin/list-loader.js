@@ -118,13 +118,7 @@ var listLoader = {
             var def = document.createElement("td");
             var data = document.createElement("td");
             
-            fillContent(variables[variable]["type"], data);
-            
-            var inputs = data.getElementsByClassName("user-value");
-            
-            for (var i = 0; i < inputs.length; i++) {
-                    inputs[i].value = variables[variable]["data"];
-            }
+            fillContent(variables[variable]["type"], data, variables[variable]["data"]);
             
             def.appendChild(document.createTextNode(variables[variable]["display"]));
                     

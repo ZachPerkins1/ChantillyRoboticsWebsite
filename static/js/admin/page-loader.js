@@ -26,13 +26,7 @@ var pageLoader = {
                 header.appendChild(document.createTextNode(dict["display"]));
                 var content = document.createElement("div");
                 content.className = "item-content";
-                fillContent(element, content);
-                
-                var inputs = content.getElementsByClassName("user-value")
- 
-                for (var i = 0; i < inputs.length; i++) {
-                    inputs[i].value = dict["data"];
-                }
+                fillContent(element, content, dict["data"]);
                 
                 div.appendChild(header);
                 div.appendChild(content);
@@ -47,10 +41,11 @@ var pageLoader = {
         var lists = window.listElements;
         
         for (var element in staticElements) {
-            var section = document.getElementById(element).getElementsByTagName("textarea");
+            var sections = document.getElementById(element).getElementsByClassName("item-content");
+            console.log(sections);
             var k = 0;
             for (var item in staticElements[element]["data"]) {
-                staticElements[element]["data"][item]["data"] = section[k].value;
+                staticElements[element]["data"][item]["data"] = getDataFormatted(element, sections[k]);
                 k++;
             }
         }
