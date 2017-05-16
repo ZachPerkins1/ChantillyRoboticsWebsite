@@ -63,20 +63,24 @@ def edit_page(page):
     
 @app.route("/admin/save-data", methods=['POST'])
 def save():
-    data = json.loads(request.form.get("data"))
+    static = json.loads(request.form.get("static_elements"))
+    lists = json.loads(request.form.get("list_elements"))
     page = request.form.get("page_name")
     
+    print lists
+    print static
     
-    for key in data:
-        if key == "list":
-            for name in data["lists"]:
-                for var in data["lists"]["name"]:
-                    r.delete(page + ":lists:" + name + ":" + var + ":data")
-                    for item in data["lists"][name][var]["data"]:
-                        r.rpush(page + ":lists:" + name + ":" + var + ":data", item)
-        else:
-            for item in data[key]:
-                r.hmset(page + ":names:" + name, data[key][name])
+    for key in lists:
+        for name in lists:
+            for var in lists[name]:
+                r.delete(page + ":lists:" + name + ":" + var + ":data")
+                for item in lists[name][var]["data"]:
+                    r.rpush(page + ":lists:" + name + ":" + var + ":data", item)
+            
+    for key in static:
+        for name in static[key]["data"]:
+            print name
+            r.hmset(page + ":names:" + name, static[key]["data"][name])
 
                 
     return jsonify(name="Hello")

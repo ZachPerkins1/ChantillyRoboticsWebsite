@@ -19,7 +19,7 @@ var listLoader = {
                     variables[name]["display"] = lists[listName][name]["display"];
                     variables[name]["type"] = lists[listName][name]["type"];
                     variables[name]["data"] = lists[listName][name]["data"][x];
-                }   
+                }                
             }
                 
                 
@@ -119,9 +119,13 @@ var listLoader = {
             var data = document.createElement("td");
             
             fillContent(variables[variable]["type"], data);
-            for (var input in data.getElementsByClassName("user-value"))
-                input.value = variables[variable]["data"];
-                    
+            
+            var inputs = data.getElementsByClassName("user-value");
+            
+            for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].value = variables[variable]["data"];
+            }
+            
             def.appendChild(document.createTextNode(variables[variable]["display"]));
                     
             row.appendChild(def);

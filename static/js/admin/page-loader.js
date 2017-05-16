@@ -28,8 +28,11 @@ var pageLoader = {
                 content.className = "item-content";
                 fillContent(element, content);
                 
-                for (var input in content.getElementsByClassName("user-value"))
-                    input.value = dict["data"];
+                var inputs = content.getElementsByClassName("user-value")
+ 
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].value = dict["data"];
+                }
                 
                 div.appendChild(header);
                 div.appendChild(content);
@@ -47,7 +50,7 @@ var pageLoader = {
             var section = document.getElementById(element).getElementsByTagName("textarea");
             var k = 0;
             for (var item in staticElements[element]["data"]) {
-                item["data"] = section[k].value;
+                staticElements[element]["data"][item]["data"] = section[k].value;
                 k++;
             }
         }
@@ -153,9 +156,8 @@ var pageLoader = {
             
             $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
                 data: {
-                    list: JSON.stringify(tmpList),
-                    text: JSON.stringify(window.texts),
-                    image: JSON.stringify(window.images),
+                    list_elements: JSON.stringify(tmpList),
+                    static_elements: JSON.stringify(window.staticElements),
                     page_name: window.page
                 },
                 success: function(data){

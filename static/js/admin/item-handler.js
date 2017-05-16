@@ -2,7 +2,7 @@ function addHandlers() {
 
     addHandler("text", function(parent) {
         var textarea = document.createElement("textarea");
-        textarea.className = "user-input"
+        textarea.className = "user-value"
         parent.appendChild(textarea);
     });
     
@@ -16,7 +16,7 @@ function addHandlers() {
         var span = document.createElement("span");
         span.className = "progress";
         var placeholder = document.createElement("textarea");
-        placeholder.classList.add("user-input", "image-placeholder");
+        placeholder.classList.add("user-value", "image-placeholder");
         form.appendChild(selector);
         form.appendChild(span);
         form.appendChild(placeholder);
