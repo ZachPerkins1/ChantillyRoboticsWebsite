@@ -14,9 +14,9 @@ import image_manager as imanager
 
 sys.modules['_elementtree'] = None
 
-
 app = Flask(__name__)
 r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password="8fb344199bbb94235135457306928ef0")
+previews = {}
 
 app.config['SECRET_KEY'] = "hard to guess string"
 app.config['UPLOAD_FOLDER'] = "static/usr_img/"
@@ -82,12 +82,69 @@ def save():
 
                 
     return jsonify(name="Hello")
+    
+@app.route("/admin/gen-preview", methods=['POST'])
+def gen_preview():
+    static_data = json.loads(request.form.get("static_elements"))
+    list_data = json.loads(request.form.get("list_elements"))
+    page = request.form.get("page_name")
+    
+    data = {}
+    
+    i = 0;
+    while i in previews:
+        i += 1
+    
+    names = r.smembers(page + ":name_index")
+    for name in names:
+        if name in list_data:
+            name_data = list_data[name]
+            lists = []
+            for i in range(name_data["_count"]):
+                item = {}
+                for var in name_data:
+                    if not var.startswith("_"):
+                        item[var] = name_data[var]["data"][i]
+
+                    
+                lists.append(item)
+                
+            data[name] = lists
+        else:
+            for key in static_data:
+                if name in static_data[key]["data"]:
+                    data[name] = static_data[key]["data"][name]
+                    
+    previews[i] = {
+        "page": page,
+        "data": data
+    }
+    
+    return jsonify(uid=i)
+    
+@app.route("/admin/rm-preview", methods=['POST'])
+def rm_preview():
+    uid = request.form.get("uid")
+    try:
+        del previews[uid]
+    except:
+        pass
+    
+    
+@app.route("/admin/preview/<uid>")
+def preview(uid):
+    path = previews[uid]["page"]
+    data = previews[uid]["data"]
+    
+    return render_template("gen/" + path + ".html", data=data)
+
 
 
 @app.route("/")
 def home():
     """Renders the home page"""
     return default("index")
+
 
 
 @app.route("/<path:path>")
