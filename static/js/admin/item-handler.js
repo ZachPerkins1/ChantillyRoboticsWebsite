@@ -7,11 +7,11 @@ function addHandlers() {
             var textarea = document.createElement("textarea");
             textarea.className = "user-value"
             parent.appendChild(textarea);
-            textarea.value = data;
+            textarea.value = data["value"];
         },
         
-        formatData: function(content) {
-            return content.getElementsByClassName("user-value")[0].value;
+        formatData: function(content, data) {
+            data["value"] = content.getElementsByClassName("user-value")[0].value;
         }
     });
     
@@ -28,7 +28,7 @@ function addHandlers() {
             var span = document.createElement("span");
             span.className = "progress";
             var placeholder = document.createElement("textarea");
-            placeholder.value = data;
+            placeholder.value = data["value"];
             placeholder.classList.add("user-value", "image-placeholder");
             form.appendChild(selector);
             form.appendChild(span);
@@ -36,8 +36,8 @@ function addHandlers() {
             parent.appendChild(form);
         },
         
-        formatData: function(content) {
-            return content.getElementsByClassName("user-value")[0].value;
+        formatData: function(content, data) {
+            data["value"] = content.getElementsByClassName("user-value")[0].value;
         }
     });
 }
@@ -52,8 +52,7 @@ function fillContent(type, content, data) {
     window.handlers[type].loadData(content, data);
 }
 
-function getDataFormatted(type, content) {
-    console.log(window.handlers[type].formatData(content));
-    return window.handlers[type].formatData(content);
+function getDataFormatted(type, content, data) {
+    window.handlers[type].formatData(content, data);
 }
 

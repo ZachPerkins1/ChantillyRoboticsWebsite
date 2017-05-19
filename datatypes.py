@@ -9,7 +9,7 @@ def add_tags():
 
 class Text(Tag):
     def fill_line(self, data):
-        return "{{ " + data["name"] + " }}"
+        return "{{ {name}['value'] }"
         
     def return_tag_name(self):
         return "text"
@@ -24,7 +24,7 @@ class Text(Tag):
 class Image(Tag):
     def fill_line(self, data):
         attr = data["attr"]
-        text = "<img src=\"{{ url_for('static', filename='usr_img/' + " + data["name"] + ") }}\""
+        text = "<img src=\"{{ url_for('static', filename='usr_img/' + {name}['value']) }}\""
         r = dict(attr)
         del r["name"]
         del r["type"]
@@ -47,5 +47,4 @@ class Image(Tag):
         
     def can_be_in_list(self):
         return True
-        
         

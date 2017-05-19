@@ -38,23 +38,25 @@ def edit_page(page):
     names = r.smembers(page + ":name_index")
     data = {}
     lists = []
-    displays = {}
+    type_info = {}
     
     for key in dmanager.get_tags():
         data[key] = []
-        displays[key] = dmanager._datatypes[key].return_display_name()
+        type_info[key] = {}
+        type_info[key]["display"] = dmanager._datatypes[key].return_display_name()
+        type_info[key]["empty"] = dmanager._datatypes[key]._get_empty()
 
     for name in names:
         name_data = dmanager.get_data(page, name)
         if name_data["type"] == "list":
             lists.append(name_data)
-            print name_data
         else:
             data[name_data["type"]].append(name_data)
+            print name_data
 
     page_data = {
-        "data": data,
-        "display_names": displays,
+        "static_elements": data,
+        "type_info": type_info,
         "page_name": page,
         "list_elements": lists
     }
@@ -75,11 +77,11 @@ def save():
             for var in lists[name]:
                 r.delete(page + ":lists:" + name + ":" + var + ":data")
                 for item in lists[name][var]["data"]:
-                    r.rpush(page + ":lists:" + name + ":" + var + ":data", item)
+                    r.rpush(page + ":lists:" + name + ":" + var + ":data", dmanager.get_tags()[lists[name][var]["type"]].format_before_saving(item))
             
     for key in static:
         for name in static[key]["data"]:
-            print name
+            static[key]["data"][name]["data"] = dmanager.get_tags()[key].format_before_saving(static[key]["data"][name]["data"])
             r.hmset(page + ":names:" + name, static[key]["data"][name])
 
                 

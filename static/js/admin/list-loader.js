@@ -118,6 +118,8 @@ var listLoader = {
             var def = document.createElement("td");
             var data = document.createElement("td");
             
+            data.className = "item-content";
+            
             fillContent(variables[variable]["type"], data, variables[variable]["data"]);
             
             def.appendChild(document.createTextNode(variables[variable]["display"]));
@@ -167,7 +169,8 @@ var listLoader = {
                 variables[name] = {};
                 variables[name]["display"] = lists[listName][name]["display"];
                 variables[name]["type"] = lists[listName][name]["type"];
-                variables[name]["data"] = "";
+                variables[name]["data"] = window.typeInfo[lists[listName][name]["type"]]["empty"];
+                console.log(variables[name]["data"]);
             }   
         }
         
