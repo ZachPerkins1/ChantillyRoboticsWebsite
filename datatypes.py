@@ -39,6 +39,9 @@ class Image(Tag):
         text += ">"
         return text
         
+    def get_empty(self, data):
+        data["value"] = "fruits_0.jpg"
+        
     def return_tag_name(self):
         return "image"
         

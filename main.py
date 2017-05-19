@@ -52,7 +52,6 @@ def edit_page(page):
             lists.append(name_data)
         else:
             data[name_data["type"]].append(name_data)
-            print name_data
 
     page_data = {
         "static_elements": data,
@@ -72,7 +71,6 @@ def save():
     for key in lists:
         for name in lists:
             for var in lists[name]:
-                print var
                 r.delete(page + ":lists:" + name + ":" + var + ":data")
                 for item in lists[name][var]["data"]:
                     r.rpush(page + ":lists:" + name + ":" + var + ":data", dmanager.get_tags()[lists[name][var]["type"]].format_before_saving(item))
@@ -108,7 +106,6 @@ def default(path):
                     x = 0
                     for var in name_data["data"]:
                         item[var["name"]] = json.loads(name_data["data"][x]["data"][i])
-                        print item[var["name"]]
                         x += 1
 
                         

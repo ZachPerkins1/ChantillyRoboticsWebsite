@@ -85,7 +85,10 @@ var pageLoader = {
         
     uploadImages: function() {
         var forms = document.getElementsByClassName("image-upload");
-        document.getElementById("message-box").innerHTML = "Uploading (1/" + forms.length + ")...";
+        
+        if (forms.length > 0) 
+            document.getElementById("message-box").innerHTML = "Uploading...";
+        
             
         for (var count = 0; count < forms.length; count++) {
             $.ajax({
@@ -125,18 +128,14 @@ var pageLoader = {
                     if (data.filename != "") {
                         forms[i].getElementsByClassName("image-placeholder")[0].value = data.filename;
                     }
-                    
-                    if (i + 1 == forms.length) {
-                        document.getElementById("message-box").innerHTML = "Saving...";
-                        pageLoader.updateLocal();
-                        pageLoader.saveData();
-                    } else {
-                        document.getElementById("message-box").innerHTML = "Uploading Images (" + (i+1).toString() + "/" + forms.length.toString() + ")..."
-                    }
                 }
             });
         
         }
+        
+        document.getElementById("message-box").innerHTML = "Saving...";
+        pageLoader.updateLocal();
+        pageLoader.saveData();
     },
     
     saveData: function() {
@@ -151,8 +150,7 @@ var pageLoader = {
             }
             
             document.getElementById("message-box").innerHTML = "Saving...";
-            console.log(listElements);
-            
+
             $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
                 data: {
                     list_elements: JSON.stringify(tmpList),
@@ -165,38 +163,3 @@ var pageLoader = {
     }
     
 };
-
-
-function clone(obj) {
-    var copy;
- 
-    // Handle the 3 simple types, and null or undefined
-    if (null == obj || "object" != typeof obj) return obj;
- 
-    // Handle Date
-    if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
-        return copy;
-    }
- 
-    // Handle Array
-    if (obj instanceof Array) {
-        copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
-            copy[i] = clone(obj[i]);
-        }
-        return copy;
-    }
- 
-    // Handle Object
-    if (obj instanceof Object) {
-        copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-        }
-        return copy;
-    }
- 
-    throw new Error("Unable to copy obj! Its type isn't supported.");
-}
