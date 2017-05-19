@@ -9,7 +9,7 @@ def add_tags():
 
 class Text(Tag):
     def fill_line(self, data):
-        return "{{ {name}['value'] }"
+        return "{{ {name}['value'] }}"
         
     def return_tag_name(self):
         return "text"

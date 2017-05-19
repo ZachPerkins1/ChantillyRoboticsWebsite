@@ -69,12 +69,10 @@ def save():
     lists = json.loads(request.form.get("list_elements"))
     page = request.form.get("page_name")
     
-    print lists
-    print static
-    
     for key in lists:
         for name in lists:
             for var in lists[name]:
+                print var
                 r.delete(page + ":lists:" + name + ":" + var + ":data")
                 for item in lists[name][var]["data"]:
                     r.rpush(page + ":lists:" + name + ":" + var + ":data", dmanager.get_tags()[lists[name][var]["type"]].format_before_saving(item))
@@ -97,7 +95,7 @@ def home():
 @app.route("/<path:path>")
 def default(path):
     """The render function used for normal web pages on the site (such as the home page, About page, etc.)"""
-    if r.sismember("pages", path):
+    if r.sismember("page_index", path):
         data = {}
         names = r.smembers(path+ ":name_index")
         for name in names:
@@ -109,14 +107,16 @@ def default(path):
                     item = {}
                     x = 0
                     for var in name_data["data"]:
-                        item[var["name"]] = name_data["data"][x]["data"][i]
+                        item[var["name"]] = json.loads(name_data["data"][x]["data"][i])
+                        print item[var["name"]]
                         x += 1
+
                         
                     lists.append(item)
                     
                 data[name] = lists
             else:
-                data[name] = name_data["data"]
+                data[name] = json.loads(name_data["data"])
                     
         data["page"] = path
         

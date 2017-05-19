@@ -137,7 +137,7 @@ def gen_site():
             if type == "list":
                 content[top] = replace_tag("editable", content[top], "{% for item in " + cname + " %}")
                 vars = process_list(page_name, content, e)
-                content[bottom] = replace_tag("/editable", content[bottom], "{% endfor %}").replace("{name}", cname)
+                content[bottom] = replace_tag("/editable", content[bottom], "{% endfor %}")
             elif type in _datatypes:
                 name_info = dict(page=page_name, name=cname, attr=e.attrib)
                 content[top] = replace_tag("editable", content[top], _datatypes[type].fill_line(name_info).replace("{name}", cname))
@@ -185,6 +185,7 @@ def gen_site():
 
 def get_data(page, name):
     name_data = _db.hgetall(page + ":names:" + name)
+    print name_data
 
     if name_data["type"] == "list":
         name_data["data"] = []
@@ -192,7 +193,6 @@ def get_data(page, name):
         for var in _db.smembers(page + ":list_index:" + name):
             list = _db.hgetall(page + ":lists:" + name + ":" + var)
             raw_data = _db.lrange(page + ":lists:" + name + ":" + var + ":data", 0, -1)
-            print raw_data
             list["data"] = []
             for val in raw_data:
                 list["data"].append(_datatypes[list["type"]].format_before_sending(val))
@@ -230,7 +230,7 @@ def process_list(page_name, content, e):
         line = var._start_line_number - 1
         if type in _datatypes and _datatypes[type].can_be_in_list():
             name_info = dict(page=page_name, name=cname, attr=var.attrib)
-            content[line] = replace_tag("var", content[line], _datatypes[type].fill_line(name_info))
+            content[line] = replace_tag("var", content[line], _datatypes[type].fill_line(name_info)).replace("{name}", cname)
             
 
     return vars

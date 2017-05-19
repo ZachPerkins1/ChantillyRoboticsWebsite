@@ -151,6 +151,7 @@ var pageLoader = {
             }
             
             document.getElementById("message-box").innerHTML = "Saving...";
+            console.log(listElements);
             
             $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
                 data: {
