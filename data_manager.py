@@ -99,8 +99,6 @@ def gen_site():
     files = os.listdir("templates")
     files = [fn for fn in files if fn.endswith(".html")]
 
-    _db.delete("name_index")
-
     if _db.exists("page_index"):
         _db.delete("page_index")
 
@@ -111,6 +109,12 @@ def gen_site():
         tree = et.parse("templates/" + fn, parser=LineNumberingParser())
         root = tree.getroot()
         editables = root.findall(".//editable")
+        
+        old_index = None
+        
+        if _db.exists(page_name + ":name_index"):
+            old_index = _db.smembers(page_name + ":name_index")
+            _db.delete(page_name + ":name_index")
 
         content = None
 
@@ -157,10 +161,6 @@ def gen_site():
                         create_blank_data(v)
                     
                     _db.hmset(page_name + ":lists:" + name + ":" + var.get("name"), v)
-
-        for name in _db.smembers(page_name + ":name_index"):
-            if name not in names:
-                _db.srem(page_name + ":name_index", name)
         
         path = "templates/gen/" + fn
 
