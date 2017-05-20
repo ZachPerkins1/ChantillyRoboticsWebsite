@@ -91,20 +91,22 @@ def gen_preview():
     
     data = {}
     
-    i = 0;
-    while i in previews:
-        i += 1
+    print previews
     
+    uid = 0
+    while uid in previews:
+        uid += 1
+        
+
     names = r.smembers(page + ":name_index")
     for name in names:
         if name in list_data:
             name_data = list_data[name]
             lists = []
-            for i in range(name_data["_count"]):
+            for i in range(len(name_data[name_data.keys()[0]]["data"])):
                 item = {}
                 for var in name_data:
-                    if not var.startswith("_"):
-                        item[var] = name_data[var]["data"][i]
+                    item[var] = name_data[var]["data"][i]
 
                     
                 lists.append(item)
@@ -113,14 +115,14 @@ def gen_preview():
         else:
             for key in static_data:
                 if name in static_data[key]["data"]:
-                    data[name] = static_data[key]["data"][name]
+                    data[name] = static_data[key]["data"][name]["data"]
                     
-    previews[i] = {
+    previews[uid] = {
         "page": page,
         "data": data
     }
     
-    return jsonify(uid=i)
+    return jsonify(uid=uid)
     
 @app.route("/admin/rm-preview", methods=['POST'])
 def rm_preview():
@@ -131,12 +133,14 @@ def rm_preview():
         pass
     
     
-@app.route("/admin/preview/<uid>")
+@app.route("/admin/preview/<int:uid>")
 def preview(uid):
-    path = previews[uid]["page"]
-    data = previews[uid]["data"]
-    
-    return render_template("gen/" + path + ".html", data=data)
+    try:
+        path = previews[uid]["page"]
+        data = previews[uid]["data"]
+        return render_template("gen/" + path + ".html", data=data)
+    except:
+        return render_template("blocks/not-found.html"), 404
 
 
 

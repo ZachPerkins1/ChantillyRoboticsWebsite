@@ -132,13 +132,30 @@ var pageLoader = {
             });
         
         }
-        
-        document.getElementById("message-box").innerHTML = "Saving...";
-        pageLoader.updateLocal();
-        pageLoader.saveData();
     },
     
     saveData: function() {
+        document.getElementById("message-box").innerHTML = "Saving...";
+        pageLoader.uploadImages();
+        pageLoader.updateLocal();
+        pageLoader.sendData("/admin/save-data", function(data) {
+            document.getElementById("message-box").innerHTML = "Saved.";
+        });
+        
+    },
+    
+    genPreview: function() {
+        var newTab = window.open("", "_blank");
+        document.getElementById("message-box").innerHTML = "Generating Preview...";
+        pageLoader.uploadImages();
+        pageLoader.updateLocal();
+        pageLoader.sendData("/admin/gen-preview", function(data) {
+            newTab.location = "/admin/preview/" + data["uid"].toString()
+            document.getElementById("message-box").innerHTML = "Preview generated. Closing it will cancel the current preview.";
+        });
+    },
+    
+    sendData: function(url, success) {
         var tmpList = {};
             for (var item in window.listElements) {
                 tmpList[item] = {};
@@ -151,15 +168,15 @@ var pageLoader = {
             
             document.getElementById("message-box").innerHTML = "Saving...";
 
-            $.ajax({ url: $SCRIPT_ROOT + "/admin/save-data",
+            $.ajax({ url: $SCRIPT_ROOT + url,
                 data: {
                     list_elements: JSON.stringify(tmpList),
                     static_elements: JSON.stringify(window.staticElements),
                     page_name: window.page
                 },
-                success: function(data){
-                    document.getElementById("message-box").innerHTML = "Saved.";
-                }, dataType: "json", type: "post"});
+                success: success,
+                dataType: "json", type: "post"
+            });
     }
     
 };
