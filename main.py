@@ -126,11 +126,13 @@ def gen_preview():
     
 @app.route("/admin/rm-preview", methods=['POST'])
 def rm_preview():
-    uid = request.form.get("uid")
+    uid = int(request.form.get("uid"))
     try:
         del previews[uid]
     except:
         pass
+    
+    return "success"
     
     
 @app.route("/admin/preview/<int:uid>")
@@ -138,7 +140,7 @@ def preview(uid):
     try:
         path = previews[uid]["page"]
         data = previews[uid]["data"]
-        return render_template("gen/" + path + ".html", data=data)
+        return render_template("gen/" + path + ".html", data=data, uid=uid, layout="blocks/preview-layout.html")
     except:
         return render_template("blocks/not-found.html"), 404
 
@@ -178,7 +180,7 @@ def default(path):
                     
         data["page"] = path
         
-        return render_template("gen/" + path + ".html", data=data)
+        return render_template("gen/" + path + ".html", data=data, layout="blocks/layout.html")
         
     else:
         return render_template("blocks/not-found.html"), 404

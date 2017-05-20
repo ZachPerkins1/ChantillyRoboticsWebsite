@@ -1,0 +1,17 @@
+{% extends "blocks/layout.html" %}
+{% block script %}
+<script>
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    
+    window.onbeforeunload = function() {
+        alert("test");
+        $.ajax({ url: $SCRIPT_ROOT + "/admin/rm-preview",
+            data: {
+               uid: {{ uid }}
+            },
+                    
+        dataType: "json", type: "post"
+        });
+    };
+</script>
+{% endblock %}
