@@ -134,6 +134,9 @@ def gen_site():
 
             d = dict(e.attrib)
             
+            if "display" not in d:
+                d["display"] = name
+            
             names.append(name)
             _db.sadd(page_name + ":name_index", name)
             vars = None
@@ -156,6 +159,9 @@ def gen_site():
                     _db.sadd(page_name + ":list_index:" + name, var.get("name"))
                     
                     v = dict(var.attrib)
+                    
+                    if "display" not in v:
+                        v["display"] = v["name"]
                     
                     if not _db.hexists(page_name + ":lists:" + name + ":" + var.get("name"), "data"):
                         create_blank_data(v)
