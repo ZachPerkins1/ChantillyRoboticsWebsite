@@ -83,6 +83,10 @@ def save():
                 
     return jsonify(name="Hello")
     
+@app.route("/admin/preview-loading")
+def preview_loading():
+    return render_template("blocks/loading-preview.html")
+    
 @app.route("/admin/gen-preview", methods=['POST'])
 def gen_preview():
     static_data = json.loads(request.form.get("static_elements"))
