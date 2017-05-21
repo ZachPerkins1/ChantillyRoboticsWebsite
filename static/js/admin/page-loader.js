@@ -81,11 +81,7 @@ var pageLoader = {
     
     save: function(page) {
         if (confirm("Are you sure that you want to save? There is no way to revert after these changes are made.")) {
-<<<<<<< HEAD
             pageLoader.saveData();
-=======
-            pageLoader.uploadImages();
->>>>>>> 5ad6ebbe764997523f55f22250f513e6a95c5f2a
         }
     },
         
@@ -144,18 +140,11 @@ var pageLoader = {
     },
     
     saveData: function() {
-<<<<<<< HEAD
         document.getElementById("message-box").innerHTML = "Uploading...";
         pageLoader.uploadImages(function() {
             document.getElementById("message-box").innerHTML = "Saving..."
             pageLoader.updateLocal(function() {
                 pageLoader.sendData("/admin/save-data", function(data) {
-=======
-        document.getElementById("message-box").innerHTML = "Saving...";
-        pageLoader.uploadImages(function() {
-            pageLoader.updateLocal(function() {
-                pageLoader.sendData("/admin/gen-preview", function(data) {
->>>>>>> 5ad6ebbe764997523f55f22250f513e6a95c5f2a
                     document.getElementById("message-box").innerHTML = "Saved.";
                 });
             });
@@ -165,7 +154,6 @@ var pageLoader = {
     
     genPreview: function() {
         var newTab = window.open("/admin/preview-loading", "_blank");
-<<<<<<< HEAD
         document.getElementById("message-box").innerHTML = "Uploading Images...";
         pageLoader.uploadImages(function() {
             document.getElementById("message-box").innerHTML = "Generating Preview...";
@@ -173,14 +161,6 @@ var pageLoader = {
                 pageLoader.sendData("/admin/gen-preview", function(data) {
                     newTab.location = "/admin/preview/" + data["uid"].toString()
                     document.getElementById("message-box").innerHTML = "Preview generated.";
-=======
-        document.getElementById("message-box").innerHTML = "Generating Preview...";
-        pageLoader.uploadImages(function() {
-            pageLoader.updateLocal(function() {
-                pageLoader.sendData("/admin/gen-preview", function(data) {
-                    newTab.location = "/admin/preview/" + data["uid"].toString()
-                    document.getElementById("message-box").innerHTML = "Preview generated. Closing it will cancel the current preview.";
->>>>>>> 5ad6ebbe764997523f55f22250f513e6a95c5f2a
                 });
             });
         });
