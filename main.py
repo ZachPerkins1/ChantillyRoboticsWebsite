@@ -44,7 +44,7 @@ def edit_page(page):
         data[key] = []
         type_info[key] = {}
         type_info[key]["display"] = dmanager._datatypes[key].return_display_name()
-        type_info[key]["empty"] = dmanager._datatypes[key]._get_empty()
+        type_info[key]["empty"] = dmanager._datatypes[key]._get_empty({})
 
     for name in names:
         name_data = dmanager.get_data(page, name)
@@ -52,6 +52,7 @@ def edit_page(page):
             lists.append(name_data)
         else:
             data[name_data["type"]].append(name_data)
+    
 
     page_data = {
         "static_elements": data,

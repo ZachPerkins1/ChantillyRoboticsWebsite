@@ -44,14 +44,14 @@ class Tag(object):
         n_data = json.dumps(data)
         return n_data
         
-    def _get_empty(self):
+    def _get_empty(self, curr):
         d = {}
         d["_admin"] = {}
         d["value"] = ""
-        self.get_empty(d)
+        self.get_empty(d, curr)
         return d
 
-    def get_empty(self, data):
+    def get_empty(self, data, attr):
         pass
     
     def fill_line(self, data):
@@ -219,7 +219,7 @@ def get_data(page, name):
     
     
 def create_blank_data(curr):
-    curr["data"] = json.dumps(_datatypes[curr["type"]]._get_empty()).decode("UTF-8")
+    curr["data"] = json.dumps(_datatypes[curr["type"]]._get_empty(curr)).decode("UTF-8")
 
 
 def process_list(page_name, content, e):

@@ -16,6 +16,21 @@ function addHandlers() {
     });
     
     addHandler({
+        type: "variable",
+        
+        loadData: function(parent, data) {
+            var textarea = document.createElement("textarea");
+            textarea.className = "user-value"
+            parent.appendChild(textarea);
+            textarea.value = data["value"];
+        },
+        
+        formatData: function(content, data) {
+            data["value"] = content.getElementsByClassName("user-value")[0].value;
+        }
+    });
+    
+    addHandler({
         type: "image",
         
         loadData: function(parent, data) {

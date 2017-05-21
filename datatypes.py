@@ -5,6 +5,7 @@ from data_manager import add_tag
 def add_tags():
     add_tag(Text())
     add_tag(Image())
+    add_tag(Variable())
     
 
 class Text(Tag):
@@ -39,7 +40,7 @@ class Image(Tag):
         text += ">"
         return text
         
-    def get_empty(self, data):
+    def get_empty(self, data, attr):
         data["value"] = "fruits_0.jpg"
         
     def return_tag_name(self):
@@ -50,4 +51,32 @@ class Image(Tag):
         
     def can_be_in_list(self):
         return True
+
+class Variable(Tag):
+    def fill_line(self, data):
+        fill_text = "{{ {name}['value'] }}"
+        var_type = "string"
+        if "var_type" in data["attr"]:
+            var_type = data["attr"]["var_type"].lower()
+            
+        if var_type == "string":
+            fill_text = "\"" + fill_text + "\""
+    
+        return "<script>var " + data["attr"]["name"] + " = " + fill_text + ";</script>"
         
+    def get_empty(self, data, attr):
+        var_type = "string"
+        if "var_type" in attr:
+            var_type = attr["var_type"].lower()
+            
+        if var_type == "int":
+            data["value"] = "0"
+        
+    def return_tag_name(self):
+        return "variable"
+        
+    def return_display_name(self):
+        return "Variable"
+        
+    def can_be_in_list(self):
+        return False
