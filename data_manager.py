@@ -171,7 +171,7 @@ def gen_site():
         content[-1] = "{% endblock %}"
 
         top_text = [
-            "{% extends \"blocks/layout.html\" %}\n",
+            "{% extends layout %}\n",
             "{% set page_name = \"" + root.get("name") + "\" %}\n",
             "{% block content %}\n"
         ]
