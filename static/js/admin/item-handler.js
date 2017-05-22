@@ -7,11 +7,11 @@ function addHandlers() {
             var textarea = document.createElement("textarea");
             textarea.className = "user-value"
             parent.appendChild(textarea);
-            textarea.value = data["value"];
+            textarea.value = data["data"]["value"];
         },
         
         formatData: function(content, data) {
-            data["value"] = content.getElementsByClassName("user-value")[0].value;
+            data["data"]["value"] = content.getElementsByClassName("user-value")[0].value;
         }
     });
     
@@ -19,14 +19,28 @@ function addHandlers() {
         type: "variable",
         
         loadData: function(parent, data) {
-            var textarea = document.createElement("textarea");
-            textarea.className = "user-value"
-            parent.appendChild(textarea);
-            textarea.value = data["value"];
+            var varType = "string"
+            if ("var-type" in data)
+                varType = data["var-type"]
+                
+            if (varType == "string" || varType == "int") {
+                var textarea = document.createElement("textarea");
+                textarea.className = "user-value"
+                parent.appendChild(textarea);
+                textarea.value = data["data"]["value"];
+            } else if (varType == "date") {
+                var input = document.createElement("input");
+                input.setAttribute("type", "text");
+                input.className = "user-value"
+                parent.appendChild(input);
+                var date = new Date(data["data"]["value"]);
+                $(input).datepicker();
+                $(input).datepicker("setDate", date);
+            }
         },
         
         formatData: function(content, data) {
-            data["value"] = content.getElementsByClassName("user-value")[0].value;
+            data["data"]["value"] = content.getElementsByClassName("user-value")[0].value;
         }
     });
     
@@ -43,7 +57,7 @@ function addHandlers() {
             var span = document.createElement("span");
             span.className = "progress";
             var placeholder = document.createElement("textarea");
-            placeholder.value = data["value"];
+            placeholder.value = data["data"]["value"];
             placeholder.classList.add("user-value", "image-placeholder");
             form.appendChild(selector);
             form.appendChild(span);
@@ -52,7 +66,7 @@ function addHandlers() {
         },
         
         formatData: function(content, data) {
-            data["value"] = content.getElementsByClassName("user-value")[0].value;
+            data["data"]["value"] = content.getElementsByClassName("user-value")[0].value;
         }
     });
 }

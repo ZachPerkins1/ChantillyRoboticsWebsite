@@ -37,8 +37,10 @@ $(document).ready(function(){
     }
   }
 
-  var endDate = new Date("Apr 07, 2017 10:59:59").getTime();
-  //  new Date().getTime() + (3 * 1000) + 3000;
+  // svar endDate = date.getTime();
+  // console.log(date);
+  var endDate = event_date;
+  console.log(event_date);
 
   //Do it once so it doesn't start empty
   setCountdownTimer(endDate);

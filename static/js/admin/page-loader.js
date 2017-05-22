@@ -26,7 +26,7 @@ var pageLoader = {
                 header.appendChild(document.createTextNode(dict["display"]));
                 var content = document.createElement("div");
                 content.className = "item-content";
-                fillContent(element, content, dict["data"]);
+                fillContent(element, content, dict);
                 
                 div.appendChild(header);
                 div.appendChild(content);
@@ -41,12 +41,15 @@ var pageLoader = {
         var lists = window.listElements;
         
         for (var element in staticElements) {
-            var sections = document.getElementById(element).getElementsByClassName("item-content");
-            console.log(sections);
-            var k = 0;
-            for (var item in staticElements[element]["data"]) {
-                getDataFormatted(element, sections[k], staticElements[element]["data"][item]["data"]);
-                k++;
+            var elementDiv = document.getElementById(element);
+            if (elementDiv != undefined) {
+                var sections = elementDiv.getElementsByClassName("item-content");
+                console.log(sections);
+                var k = 0;
+                for (var item in staticElements[element]["data"]) {
+                    getDataFormatted(element, sections[k], staticElements[element]["data"][item]);
+                    k++;
+                }
             }
         }
         
@@ -64,8 +67,11 @@ var pageLoader = {
                     for (var j = 0; j < divs.length; j++) {
                         var inputs = divs[j].getElementsByClassName("item-content");
                         var item = clone(window.typeInfo[type]["empty"]);
-                        getDataFormatted(type, inputs[x], item);
-                        lists[list][variable]["data"].push(item);
+                        var v = clone(lists[list][variable]);
+                        v["data"] = item;
+                        console.log(v)
+                        getDataFormatted(type, inputs[x], v);
+                        lists[list][variable]["data"].push(v["data"]);
                     }
                     
                     x++;
@@ -142,7 +148,7 @@ var pageLoader = {
     saveData: function() {
         document.getElementById("message-box").innerHTML = "Uploading...";
         pageLoader.uploadImages(function() {
-            document.getElementById("message-box").innerHTML = "Saving..."
+            document.getElementById("message-box").innerHTML = "Saving...";
             pageLoader.updateLocal(function() {
                 pageLoader.sendData("/admin/save-data", function(data) {
                     document.getElementById("message-box").innerHTML = "Saved.";
@@ -154,7 +160,7 @@ var pageLoader = {
     
     genPreview: function() {
         var newTab = window.open("/admin/preview-loading", "_blank");
-        document.getElementById("message-box").innerHTML = "Uploading Images...";
+        document.getElementById("message-box").innerHTML = "Uploading...";
         pageLoader.uploadImages(function() {
             document.getElementById("message-box").innerHTML = "Generating Preview...";
             pageLoader.updateLocal(function() {

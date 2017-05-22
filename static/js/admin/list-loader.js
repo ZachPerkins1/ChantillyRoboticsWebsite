@@ -120,7 +120,7 @@ var listLoader = {
             
             data.className = "item-content";
             
-            fillContent(variables[variable]["type"], data, variables[variable]["data"]);
+            fillContent(variables[variable]["type"], data, variables[variable]);
             
             def.appendChild(document.createTextNode(variables[variable]["display"]));
                     

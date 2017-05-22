@@ -56,21 +56,25 @@ class Variable(Tag):
     def fill_line(self, data):
         fill_text = "{{ {name}['value'] }}"
         var_type = "string"
-        if "var_type" in data["attr"]:
-            var_type = data["attr"]["var_type"].lower()
+        if "var-type" in data["attr"]:
+            var_type = data["attr"]["var-type"].lower()
             
         if var_type == "string":
             fill_text = "\"" + fill_text + "\""
+        elif var_type == "date":
+            fill_text = "new Date(\"" + fill_text + "\")"
     
         return "<script>var " + data["attr"]["name"] + " = " + fill_text + ";</script>"
         
     def get_empty(self, data, attr):
         var_type = "string"
-        if "var_type" in attr:
-            var_type = attr["var_type"].lower()
+        if "var-type" in attr:
+            var_type = attr["var-type"].lower()
             
         if var_type == "int":
             data["value"] = "0"
+        elif var_type == "date":
+            data["value"] = "Sat, 01 Jan 2000 00:00:00 GMT"
         
     def return_tag_name(self):
         return "variable"
