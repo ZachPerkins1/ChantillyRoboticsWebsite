@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" type="text/css" />
+        <script type="text/javascript">
+            function register() {
+                
+            }
+        </script>
+    </head>
+    <body>
+        <div id="login">
+            <h2>Administrator Login</h2>
+            <form method="POST">
+                <table id="login-table">
+                    <tr>
+                        <td>Username:</td>
+                        <td><input type="text" name="username"/></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" name="password"/></td>
+                    </tr> 
+                </table>
+                <input type="submit" value="Login"/>
+                <button onclick="register()">Register</button>
+            </form>
+        </div> 
+    </body>
+</html>

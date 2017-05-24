@@ -197,6 +197,11 @@ def upload():
         file = request.files['file']
         res = imanager.upload(file)
         return jsonify(res)
+        
+        
+@app.route("/admin/login", methods=['GET', 'POST'])
+def login():
+    return render_template("admin/login.html")
 
 
 print "Server Starting..."
