@@ -12,9 +12,10 @@ error_codes = {
     3: "Invalid session code",
     4: "Passwords do not match",
     5: "Must be a valid email",
-    6: "Password must be at least 4 characters",
+    6: "Password must be at least 8 characters",
     7: "User does not exist",
-    8: "Incorrect password"
+    8: "Incorrect password",
+    9: "Password must contain at least one number"
 }
 
 SECRET_KEY_SHHHH = "#85)yc5*u%w2eppddrgk6muu5#i8x+*ljfm9l(kkhysqfu^bex_prostate_cancer"
@@ -67,11 +68,13 @@ class Session(object):
         while i in sessions:
             i += 1
             
+            
         return i
 
 
 class User(object):
     def __init__(self, name, data={}):
+        data["access-level"] = 0
         self._data = data
         self._name = name
         
@@ -91,7 +94,7 @@ class User(object):
         _db.hmset("users" + self._name, self._data)
         
     @classmethod
-    def create_new(cls, user, email, password):
+    def create_new(cls, user, email, password, optional_params):
         s, p = cls._hash_password(password)
         _db.sadd("user_index", user.lower())
         data = {
@@ -100,6 +103,9 @@ class User(object):
             'salt': s
         }
         
+        data = data.copy()
+        data.update(optional_params)
+    
         n_user = cls(user, data)
         n_user.push_data()
         return n_user
@@ -146,12 +152,12 @@ def gen_rand(bytes):
     num = os.urandom(bytes)
 
 
-def create_user(name, email, password, confirm):
+def create_user(name, email, password, confirm, optional_params):
     errs = verify_user(name, email, password, confirm)
     if errs.any():
         return errs, None
     else:
-        user = User.create_new(name, email, password)
+        user = User.create_new(name, email, password, optional_params)
         return errs, user
     
     return errs, user
@@ -165,9 +171,13 @@ def verify_user(u, e, p, c):
     r = re.compile("[\w.]+@[a-z]+(\.[a-z]+)+")
     if not r.match(e):
         errs.add(5)
-
-    if len(p) < 4:
+    
+    if len(p) < 8:
         errs.add(6)
+        
+    r = re.compile("\d")
+    if not r.search(p):
+        errs.add(9)
 
     if p != c:
         errs.add(4)
@@ -208,8 +218,8 @@ def login_user(u, p):
 def create_session(user):
     return ErrorList(), Session.create(user)
 
-def create_session_user(name, email, password, confirm):
-    errs, user = create_user(name, email, password, confirm)
+def create_session_user(name, email, password, confirm, optional_params):
+    errs, user = create_user(name, email, password, confirm, optional_params)
 
     if errs.any():
         return errs, None
@@ -220,7 +230,7 @@ def create_session_user(name, email, password, confirm):
 
 
 
-def get_session(sid, s_key, db):
+def get_session(sid, s_key):
     errs = ErrorList()
     if sid not in sessions:
         errs.add(2)
@@ -232,3 +242,14 @@ def get_session(sid, s_key, db):
         errs.add(3), session
 
     return errs, session
+    
+
+def check_session_quick(request):
+    sid = int(request.cookies.get("s_id", "-1"))
+    s_key = request.cookies.get("s_key", "")
+    errs, session = get_session(sid, s_key)
+    
+    if errs.any():
+        return False, None
+    else:
+        return True, session

@@ -4,6 +4,7 @@ body {
 
 td {
     vertical-align: middle;
+    padding: 2px;
 }
 
 #login-table td:nth-child(1) {
@@ -11,7 +12,8 @@ td {
 }
 
 #login-table input {
-    margin-left: 5px;
+    padding: 2px;
+    border: 1px solid #696b6d;
 }
 
 #login-table {
@@ -24,4 +26,13 @@ td {
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+}
+
+#errors {
+    text-align: left;
+    color: red;
+}
+
+.required {
+    font-weight: bold;
 }

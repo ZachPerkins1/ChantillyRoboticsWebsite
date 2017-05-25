@@ -14,16 +14,16 @@
             <form method="POST">
                 <table id="login-table">
                     <tr>
-                        <td>Username:</td>
-                        <td><input type="text" name="username" value="{{ cached_data['username'] if cached_data }}"/></td>
+                        <td class="required">Username:</td>
+                        <td><input type="text" name="username" value="{{ cached_data['username'] if cached_data }}" required/></td>
                     </tr>
                     <tr>
-                        <td>Password:</td>
-                        <td><input type="password" name="password"/></td>
+                        <td class="required">Password:</td>
+                        <td><input type="password" name="password" required/></td>
                     </tr> 
                 </table>
                 <input type="submit" value="Login"/>
-                <button onclick="register()">Register</button>
+                <button type="button" onclick="register()">Register</button>
             </form>
             
             <div id="errors">

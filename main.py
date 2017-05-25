@@ -34,6 +34,9 @@ add_tags()
 
 @app.route("/admin/edit-page/<page>")
 def edit_page(page):
+    if not sess.check_session_quick(request)[0]:
+        return redirect("/admin/login")
+        
     """Generates and returns an "edit page" page for the given page.
         Admins use these pages to add content to the website.
     """
@@ -67,6 +70,9 @@ def edit_page(page):
     
 @app.route("/admin/save-data", methods=['POST'])
 def save():
+    if not sess.check_session_quick(request)[0]:
+        return redirect("/admin/login")
+        
     static = json.loads(request.form.get("static_elements"))
     lists = json.loads(request.form.get("list_elements"))
     page = request.form.get("page_name")
@@ -92,6 +98,9 @@ def preview_loading():
     
 @app.route("/admin/gen-preview", methods=['POST'])
 def gen_preview():
+    if not sess.check_session_quick(request)[0]:
+        return redirect("/admin/login")
+        
     static_data = json.loads(request.form.get("static_elements"))
     list_data = json.loads(request.form.get("list_elements"))
     page = request.form.get("page_name")
@@ -133,6 +142,9 @@ def gen_preview():
     
 @app.route("/admin/rm-preview", methods=['POST'])
 def rm_preview():
+    if not sess.check_session_quick(request)[0]:
+        return redirect("/admin/login")
+        
     uid = int(request.form.get("uid"))
     try:
         del previews[uid]
@@ -144,6 +156,9 @@ def rm_preview():
     
 @app.route("/admin/preview/<int:uid>")
 def preview(uid):
+    if not sess.check_session_quick(request)[0]:
+        return redirect("/admin/login")
+        
     try:
         path = previews[uid]["page"]
         data = previews[uid]["data"]
@@ -201,6 +216,15 @@ def upload():
         return jsonify(res)
         
         
+@app.route("/admin/home")
+def admin_home():
+    if not sess.check_session_quick(request)[0]:
+        return redirect("/admin/login")
+        
+    pages = r.smembers("page_index")
+    return render_template("admin/home.html", pages=pages)
+        
+        
 @app.route("/admin/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -233,9 +257,14 @@ def register():
         email = request.form.get("email")
         confirm = request.form.get("confirm")
         
+        optional = {
+            "first-name": request.form.get("first-name"),
+            "last-name": request.form.get("last-name")
+        }
+        
         print username
         
-        errs, session = sess.create_session_user(username, email, password, confirm)
+        errs, session = sess.create_session_user(username, email, password, confirm, optional)
 
         resp = None
         
