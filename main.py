@@ -203,14 +203,25 @@ def upload():
         
 @app.route("/admin/login", methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return render_template("admin/login.html")
+    else:
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        errs, session = sess.login_user(username, password)
 
+        resp = None
+        
+        if errs.any():
+            resp = make_response(render_template("admin/login.html", errors=errs.get_formatted(), cached_data=request.form))
+        else:
+            resp = make_response(redirect("admin/home"))
+            resp.set_cookie("s_id", str(session.get_id()))
+            resp.set_cookie("s_key", session.get_key())
     
-    username = request.form.get("username")
-    password = request.form.get("password")
+    return resp
     
-    
-    
-    return render_template("admin/login.html")
     
 @app.route("/admin/register", methods=['GET', 'POST'])
 def register():
@@ -229,13 +240,14 @@ def register():
         resp = None
         
         if errs.any():
-            resp = make_response(render_template("admin/register.html", errors=errs.get_formatted()))
+            resp = make_response(render_template("admin/register.html", errors=errs.get_formatted(), cached_data=request.form))
         else:
-            resp = make_response(redirect("admin/home.html"))
+            resp = make_response(redirect("admin/home"))
             resp.set_cookie("s_id", str(session.get_id()))
             resp.set_cookie("s_key", session.get_key())
             
         return resp
+    
 
 
 print "Server Starting..."

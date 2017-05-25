@@ -14,7 +14,7 @@ error_codes = {
     5: "Must be a valid email",
     6: "Password must be at least 4 characters",
     7: "User does not exist",
-    8: "Email does not match password"
+    8: "Incorrect password"
 }
 
 SECRET_KEY_SHHHH = "#85)yc5*u%w2eppddrgk6muu5#i8x+*ljfm9l(kkhysqfu^bex_prostate_cancer"
@@ -186,8 +186,8 @@ def login_user(u, p):
 
     if not _db.sismember("user_index", u):
         errs.add(7)
-        return errs
-        
+        return errs, None
+
     user = User.from_existing(u)
 
     salt = user.get('salt')
@@ -195,15 +195,13 @@ def login_user(u, p):
 
     if password != user.get('password'):
         errs.add(8)
+        
+    if errs.any():
+        return errs, None
 
-    err, res = create_session(user)
+    errs, res = create_session(user)
 
-    if err > 0:
-        errs.add(err)
-
-    print errs
-
-    return errs, user
+    return errs, res
 
 
 # assumes user has already been created

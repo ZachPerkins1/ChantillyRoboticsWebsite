@@ -10,11 +10,11 @@
                 <table id="login-table">
                     <tr>
                         <td>Username:</td>
-                        <td><input type="text" name="username"/></td>
+                        <td><input type="text" name="username" value="{{ cached_data['username'] if cached_data }}"/></td>
                     </tr>
                     <tr>
                         <td>Email:</td>
-                        <td><input type="text" name="email"/></td>
+                        <td><input type="text" name="email" value="{{ cached_data['email'] if cached_data }}"/></td>
                     </tr>
                     <tr>
                         <td>Password:</td>
