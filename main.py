@@ -7,10 +7,11 @@ import flask
 import os
 from datatypes import add_tags
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response, redirect
 
 import data_manager as dmanager
 import image_manager as imanager
+import sessions as sess
 
 sys.modules['_elementtree'] = None
 
@@ -28,6 +29,7 @@ app.jinja_env.autoescape = False
 
 imanager.init(app.config['UPLOAD_FOLDER'], r)
 dmanager.init(r)
+sess.init(r)
 add_tags()
 
 @app.route("/admin/edit-page/<page>")
@@ -201,7 +203,39 @@ def upload():
         
 @app.route("/admin/login", methods=['GET', 'POST'])
 def login():
+
+    
+    username = request.form.get("username")
+    password = request.form.get("password")
+    
+    
+    
     return render_template("admin/login.html")
+    
+@app.route("/admin/register", methods=['GET', 'POST'])
+def register():
+    if request.method == "GET":
+        return render_template("admin/register.html")
+    else:
+        username = request.form.get("username")
+        password = request.form.get("password")
+        email = request.form.get("email")
+        confirm = request.form.get("confirm")
+        
+        print username
+        
+        errs, session = sess.create_session_user(username, email, password, confirm)
+
+        resp = None
+        
+        if errs.any():
+            resp = make_response(render_template("admin/register.html", errors=errs.get_formatted()))
+        else:
+            resp = make_response(redirect("admin/home.html"))
+            resp.set_cookie("s_id", str(session.get_id()))
+            resp.set_cookie("s_key", session.get_key())
+            
+        return resp
 
 
 print "Server Starting..."

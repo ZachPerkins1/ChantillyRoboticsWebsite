@@ -23,13 +23,15 @@ sessions = {}
 _db = None
 
 def init(database):
+    global _db
     _db = database
     
     
 class Session(object):
-    def __init__(self, user, key):
+    def __init__(self, user, key, id):
         self._user = user
         self._key = key
+        self._id = id
 
     def get_user(self):
         return self._user
@@ -37,20 +39,21 @@ class Session(object):
     def get_key(self):
         return self._key
         
+    def get_id(self):
+        return self._id
+        
     @classmethod
-    def create(cls, user, resp):
-        salt = user.get_attribute('salt')
+    def create(cls, user):
+        salt = user.get('salt')
         rand = binascii.hexlify(os.urandom(32))
         key = hashlib.sha256(rand + salt + SECRET_KEY_SHHHH)
-        hash = key.hexdigest
+        hash = key.hexdigest()
         
-        id = Session.get_id()
+        id = Session.get_new_id()
         
-        resp.set_cookie("s_id", id)
-        resp.set_cookie("s_key", hash)
-        
-        session = cls(user, key)
+        session = cls(user, hash, id)
         sessions[id] = session
+        print id
         return session
     
     @classmethod
@@ -59,7 +62,7 @@ class Session(object):
         
         
     @classmethod
-    def get_id(cls):
+    def get_new_id(cls):
         i = 0
         while i in sessions:
             i += 1
@@ -115,9 +118,9 @@ class User(object):
         
 
 class ErrorList:
-    def __init__(self, errors=[]):
-        self._errs = errors
-    
+    def __init__(self):
+        self._errs = []
+
     def add(self, code):
         if code not in self._errs:
             self._errs.append(code)
@@ -136,7 +139,7 @@ class ErrorList:
         return len(self._errs)
         
     def any(self):
-        return self.get_count() == 0
+        return self.get_count() > 0
     
 
 def gen_rand(bytes):
@@ -169,13 +172,15 @@ def verify_user(u, e, p, c):
     if p != c:
         errs.add(4)
         
-    if len(_db.sismember("user_index", u)) > 0:
+    if _db.sismember("user_index", u):
         errs.add(1)
+        
+    print errs.get()
 
     return errs
 
 
-def login_user(u, p, resp):
+def login_user(u, p):
     errs = ErrorList()
     u = u.lower()
 
@@ -191,7 +196,7 @@ def login_user(u, p, resp):
     if password != user.get('password'):
         errs.add(8)
 
-    err, res = create_session(user, resp)
+    err, res = create_session(user)
 
     if err > 0:
         errs.add(err)
@@ -202,18 +207,18 @@ def login_user(u, p, resp):
 
 
 # assumes user has already been created
-def create_session(user, response):
-    return ErrorList(), Session.create(user, response)
+def create_session(user):
+    return ErrorList(), Session.create(user)
 
-def create_session_user(name, email, password, confirm, response):
-    err, user = create_user(name, email, password, confirm)
+def create_session_user(name, email, password, confirm):
+    errs, user = create_user(name, email, password, confirm)
 
-    if err.any():
-        return err, None
+    if errs.any():
+        return errs, None
 
-    err, session = create_session(user, response)
+    errs, session = create_session(user)
 
-    return err, session
+    return errs, session
 
 
 

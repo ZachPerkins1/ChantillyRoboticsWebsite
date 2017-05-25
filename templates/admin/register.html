@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Register</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" type="text/css" />
+    </head>
+    <body>
+        <div id="login">
+            <h2>Administrator Registration</h2>
+            <form method="POST">
+                <table id="login-table">
+                    <tr>
+                        <td>Username:</td>
+                        <td><input type="text" name="username"/></td>
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td><input type="text" name="email"/></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" name="password"/></td>
+                    </tr>
+                    <tr>
+                        <td>Confirm Password:</td>
+                        <td><input type="password" name="confirm"/></td>
+                    </tr> 
+                </table>
+                <input type="hidden" name="reg-code" value="lmao"/>
+                <input type="submit" value="Register"/>
+            </form>
+            
+            <div id="errors">
+                <ul>
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div> 
+    </body>
+</html>
