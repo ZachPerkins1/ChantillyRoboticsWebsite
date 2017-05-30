@@ -197,3 +197,7 @@ var pageLoader = {
     }
     
 };
+
+$(document).ready(function() {
+    init();
+});

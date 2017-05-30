@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin - {{ page_display }}</title>
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        <a href="{{ url_for('logout') }}">Log Out</a>  |  <a href="{{ url_for('admin_home') }}">Home</a>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

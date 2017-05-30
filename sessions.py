@@ -87,6 +87,9 @@ class User(object):
     def get_email(self):
         return self.get("email")
         
+    def get_name(self):
+        return self._name
+        
     def pull_data(self):
         self._data = _db.hgetall("users" + self._name)
         
@@ -94,19 +97,16 @@ class User(object):
         _db.hmset("users" + self._name, self._data)
         
     @classmethod
-    def create_new(cls, user, email, password, optional_params):
-        s, p = cls._hash_password(password)
-        _db.sadd("user_index", user.lower())
-        data = {
-            'email': email,
-            'password': p,
-            'salt': s
-        }
-        
-        data = data.copy()
-        data.update(optional_params)
+    def create_new(cls, data):
+        s, p = cls._hash_password(data["password"])
+        _db.sadd("user_index", data["username"].lower())
+
+        t_dict = { key:data[key] for key in data }
+        del t_dict["confirm"]
+        t_dict["password"] = p
+        t_dict["salt"] = s
     
-        n_user = cls(user, data)
+        n_user = cls(data["username"].lower(), t_dict)
         n_user.push_data()
         return n_user
 
@@ -152,41 +152,62 @@ def gen_rand(bytes):
     num = os.urandom(bytes)
 
 
-def create_user(name, email, password, confirm, optional_params):
-    errs = verify_user(name, email, password, confirm)
+def create_user(data):
+    errs = verify_user(data)
     if errs.any():
         return errs, None
     else:
-        user = User.create_new(name, email, password, optional_params)
+        user = User.create_new(data)
         return errs, user
     
     return errs, user
-
-
-def verify_user(u, e, p, c):
-    errs = ErrorList()
-    e = e.lower()
-    u = u.lower()
-
-    r = re.compile("[\w.]+@[a-z]+(\.[a-z]+)+")
-    if not r.match(e):
-        errs.add(5)
     
-    if len(p) < 8:
-        errs.add(6)
-        
-    r = re.compile("\d")
-    if not r.search(p):
-        errs.add(9)
 
-    if p != c:
-        errs.add(4)
-        
-    if _db.sismember("user_index", u):
-        errs.add(1)
-        
-    print errs.get()
+def update_user(session, data):
+    errs = verify_user(data)
+    if errs.any():
+        return errs
+    
+    for item in data:
+        if item == "password":
+            salt, pw = User._hash_password(data["password"])
+            session.get_user().set("password", pw)
+            session.get_user().set("salt", salt)
+        elif item != "confirm":   
+            session.get_user().set(item, data[item])
+    
+    session.get_user().push_data()
+    
+    return errs
 
+def verify_user(data):
+    errs = ErrorList()
+
+    if "email" in data:
+        e = data["email"].lower()
+        r = re.compile("[\w.]+@[a-z]+(\.[a-z]+)+")
+        if not r.match(e):
+            errs.add(5)
+    
+    if "password" in data:
+        p = data["password"]
+        c = data["confirm"]
+        
+        if len(p) < 8:
+            errs.add(6)
+            
+        r = re.compile("\d")
+        if not r.search(p):
+            errs.add(9)
+
+        if p != c:
+            errs.add(4)
+    
+    if "username" in data:
+        u = data["username"].lower()
+        if _db.sismember("user_index", u):
+            errs.add(1)
+        
     return errs
 
 
@@ -218,8 +239,8 @@ def login_user(u, p):
 def create_session(user):
     return ErrorList(), Session.create(user)
 
-def create_session_user(name, email, password, confirm, optional_params):
-    errs, user = create_user(name, email, password, confirm, optional_params)
+def create_session_user(data):
+    errs, user = create_user(data)
 
     if errs.any():
         return errs, None

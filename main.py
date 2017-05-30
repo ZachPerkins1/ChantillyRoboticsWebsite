@@ -218,16 +218,33 @@ def upload():
         
 @app.route("/admin/home")
 def admin_home():
-    if not sess.check_session_quick(request)[0]:
+    success, session = sess.check_session_quick(request)
+    if not success:
         return redirect("/admin/login")
         
     pages = r.smembers("page_index")
-    return render_template("admin/home.html", pages=pages)
+    
+    return render_template("admin/home.html", pages=pages, name=session.get_user().get("first-name"))
+    
+
+@app.route("/admin/edit-user", methods=['POST'])
+def edit_user():
+    success, session = sess.check_session_quick(request)
+    if success:
+        errs = sess.update_user(session, request.form)
+
+        return jsonify(errors=errs.get_formatted())
+        
+@app.route("/admin/logout")
+def logout():
+    pass
         
         
 @app.route("/admin/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        if sess.check_session_quick(request)[0]:
+            return redirect("/admin/home")
         return render_template("admin/login.html")
     else:
         username = request.form.get("username")
@@ -252,19 +269,7 @@ def register():
     if request.method == "GET":
         return render_template("admin/register.html")
     else:
-        username = request.form.get("username")
-        password = request.form.get("password")
-        email = request.form.get("email")
-        confirm = request.form.get("confirm")
-        
-        optional = {
-            "first-name": request.form.get("first-name"),
-            "last-name": request.form.get("last-name")
-        }
-        
-        print username
-        
-        errs, session = sess.create_session_user(username, email, password, confirm, optional)
+        errs, session = sess.create_session_user(request.form)
 
         resp = None
         
