@@ -43,6 +43,9 @@ class Session(object):
     def get_id(self):
         return self._id
         
+    def delete(self):
+        del sessions[self._id]
+        
     @classmethod
     def create(cls, user):
         salt = user.get('salt')
@@ -80,6 +83,9 @@ class User(object):
         
     def get(self, key):
         return self._data[key]
+        
+    def get_all(self):
+        return self._data
     
     def set(self, key, data):
         self._data[key] = data

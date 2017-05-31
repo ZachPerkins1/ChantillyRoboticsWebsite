@@ -151,7 +151,10 @@ var pageLoader = {
             document.getElementById("message-box").innerHTML = "Saving...";
             pageLoader.updateLocal(function() {
                 pageLoader.sendData("/admin/save-data", function(data) {
-                    document.getElementById("message-box").innerHTML = "Saved.";
+                    if (data["success"]) 
+                        document.getElementById("message-box").innerHTML = "Saved.";
+                    else
+                        document.getElementById("message-box").innerHTML = "Error saving data. Try refreshing the page.";
                 });
             });
         });
@@ -165,8 +168,13 @@ var pageLoader = {
             document.getElementById("message-box").innerHTML = "Generating Preview...";
             pageLoader.updateLocal(function() {
                 pageLoader.sendData("/admin/gen-preview", function(data) {
-                    newTab.location = "/admin/preview/" + data["uid"].toString()
-                    document.getElementById("message-box").innerHTML = "Preview generated.";
+                    if (data["success"]) {
+                        newTab.location = "/admin/preview/" + data["uid"].toString()
+                        document.getElementById("message-box").innerHTML = "Preview generated.";
+                    } else {
+                        newTab.close();
+                        document.getElementById("message-box").innerHTML = "Error generating preview. Try Reloading the page.";
+                    }
                 });
             });
         });

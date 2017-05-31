@@ -71,7 +71,7 @@ def edit_page(page):
 @app.route("/admin/save-data", methods=['POST'])
 def save():
     if not sess.check_session_quick(request)[0]:
-        return jsonify(success=False)
+        return redirect("/admin/login")
         
     static = json.loads(request.form.get("static_elements"))
     lists = json.loads(request.form.get("list_elements"))
@@ -90,7 +90,7 @@ def save():
             r.hmset(page + ":names:" + name, static[key]["data"][name])
 
                 
-    return jsonify(success=True)
+    return jsonify(name="Hello")
     
 @app.route("/admin/preview-loading")
 def preview_loading():
@@ -99,7 +99,7 @@ def preview_loading():
 @app.route("/admin/gen-preview", methods=['POST'])
 def gen_preview():
     if not sess.check_session_quick(request)[0]:
-        return jsonify(success=False)
+        return redirect("/admin/login")
         
     static_data = json.loads(request.form.get("static_elements"))
     list_data = json.loads(request.form.get("list_elements"))
@@ -138,7 +138,7 @@ def gen_preview():
         "data": data
     }
     
-    return jsonify(uid=uid, success=True)
+    return jsonify(uid=uid)
     
 @app.route("/admin/rm-preview", methods=['POST'])
 def rm_preview():
@@ -210,12 +210,10 @@ def default(path):
 
 @app.route("/admin/upload-image", methods=['POST'])
 def upload():
-    if not sess.check_session_quick(request)[0]:
-        return jsonify(success=False)
+    if not sess.check_session_quick()[0]:
         
     file = request.files['file']
     res = imanager.upload(file)
-    res["success"] = True
     return jsonify(res)
         
         
@@ -227,7 +225,7 @@ def admin_home():
         
     pages = r.smembers("page_index")
     
-    return render_template("admin/home.html", pages=pages, name=session.get_user().get("first-name"), user_data=session.get_user().get_all())
+    return render_template("admin/home.html", pages=pages, name=session.get_user().get("first-name"))
     
 
 @app.route("/admin/edit-user", methods=['POST'])
@@ -235,13 +233,11 @@ def edit_user():
     success, session = sess.check_session_quick(request)
     if success:
         errs = sess.update_user(session, request.form)
-        return jsonify(errors=errs.get_formatted(), success=True)
-    else:
-        return jsonify(success=False)
-        
+
+        return jsonify(errors=errs.get_formatted())
         
 @app.route("/admin/logout")
-def logout():
+    success,
     success, session = sess.check_session_quick(request)
     if success:
         session.delete()

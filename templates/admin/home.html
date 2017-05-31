@@ -73,17 +73,17 @@
             <tr><td class="heading"><b>Email:</b></td></tr>
                 <tr>
                     <td>Email:</td>
-                    <td><input type="text" name="email" required/></td>
+                    <td><input type="text" name="email" value="{{ user_data['email'] }}" required/></td>
                 </tr>
             <tr><td></td><td><button type="button" onclick="submitPartial(['email'])">Update</button></td></tr>
             <tr><td class="heading"><b>Name:</b></td></tr>
                 <tr>
                     <td>First Name:</td>
-                    <td><input type="text" name="first-name" required/></td>
+                    <td><input type="text" name="first-name" value="{{ user_data['first-name'] }}" required/></td>
                 </tr>
                 <tr>
                     <td>Last Name:</td>
-                    <td><input type="text" name="last-name" required/></td>
+                    <td><input type="text" name="last-name" value="{{ user_data['last-name'] }}" required/></td>
                 </tr> 
             <tr><td></td><td><button type="button" onclick="submitPartial(['first-name', 'last-name'])">Update</button></td></tr>
         </table>
