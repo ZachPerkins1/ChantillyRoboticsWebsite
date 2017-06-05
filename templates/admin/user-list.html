@@ -124,9 +124,9 @@ window.onresize = function() {
 
 <h2>User Manager</h2>
 <div id="unscrollable">
-    <form id="register-form">
+    <form id="register-form" method="post">
         <h3>Register new user</h3>
-        Email: <input type="email"/>
+        Email: <input type="email" name="email"/>
         Level: 
         <select name="level">
             <option value="0">Developer</option> 
@@ -134,7 +134,7 @@ window.onresize = function() {
             <option value="2" selected>Admin</option>
         </select>
         Offer Expiration:
-        <input type="number" name="expires" value="20" style="width: 40px">
+        <input type="number" name="expiry" value="20" style="width: 40px">
         <select name="time-unit">
             <option value="m" selected>Minutes</option>
             <option value="h">Hours</option>
@@ -172,5 +172,7 @@ window.onresize = function() {
         </tbody>
     </table>
 </div>
+
+{{ errors }}
 
 {% endblock %}

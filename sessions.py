@@ -4,6 +4,7 @@ import hashlib
 import binascii
 import os
 import re
+import time
 
 error_codes = {
      0: "No Error",
@@ -17,7 +18,9 @@ error_codes = {
      8: "Incorrect password",
      9: "Password must contain at least one number",
     10: "Username cannot contain spaces",
-    11: "Username can be up to 20 characters"
+    11: "Username can be up to 20 characters",
+    12: "Registration code is expired",
+    13: "Registration code does not exist"
 }
 
 user_attributes = [
@@ -43,18 +46,31 @@ class Session(object):
         self._user = user
         self._key = key
         self._id = id
+        self._set_timestamp()
+        
+    def _set_timestamp(self):
+        self._timestamp = time.time()
 
-    def get_user(self):
+    def get_user(self, passive=False):
+        if not passive:
+            self._set_timestamp()
         return self._user
     
-    def get_key(self):
+    def get_key(self, passive=False):
+        if not passive:
+            self._set_timestamp()
         return self._key
         
-    def get_id(self):
+    def get_id(self, passive=False):
+        if not passive:
+            self._set_timestamp()
         return self._id
         
     def delete(self):
         del sessions[self._id]
+        
+    def last_active(self):
+        return self._timestamp
         
     @classmethod
     def create(cls, user):
@@ -67,7 +83,6 @@ class Session(object):
         
         session = cls(user, hash, id)
         sessions[id] = session
-        print id
         return session
     
     @classmethod
@@ -85,12 +100,42 @@ class Session(object):
         return i
         
         
-class UserTemplate(object):
-    def __init__(self, email, level, expiration):
+class Registration(object):
+    def __init__(self, email, level, expiration, code):
         self._email = email
         self._level = level
-        self._expiration = expiration
-
+        self._expiration = expiration + time.time()
+        self._code = code
+        
+    def get_reg_code(self):
+        return self._code
+    
+    def get_email(self):
+        return self._email
+    
+    def get_level(self):
+        return self._level
+        
+    def is_expired(self):
+        return time.time() > self._expiration
+        
+    @classmethod
+    def create_new(cls, email, level, expiration):
+        reg_code = binascii.hexlify(os.urandom(16))
+        while reg_code in registrations:
+            reg_code = binascii.hexlify(os.urandom(16))
+            
+        reg = cls(email, level, expiration, reg_code)
+        registrations[reg_code] = reg
+        return reg
+        
+    @classmethod
+    def get(cls, reg_code):
+        if reg_code in registrations:
+            return True, registrations[reg_code]
+        else:
+            return False, None
+    
 
 class User(object):
     def __init__(self, name, data={}):
@@ -98,8 +143,6 @@ class User(object):
         for key in user_attributes:
             if key not in data:
                 data[key] = ""
-                
-        print data
                 
         self._data = data
         self._name = name
@@ -200,6 +243,13 @@ def create_user(data):
     if errs.any():
         return errs, None
     else:
+        errs, registration = get_registration(data["reg_code"])
+        if errs.any():
+            return errs, None
+             
+        data["access-level"] = registration.get_level()
+        data["email"] = registration.get_email()
+        
         user = User.create_new(data)
         return errs, user
     
@@ -261,6 +311,26 @@ def verify_user(data):
     return errs
 
 
+def get_registration(reg_code):
+    errs = ErrorList()
+    success, registration = Registration.get(reg_code)
+    
+    if success:
+        if registration.is_expired():
+            errs.add(12)
+        
+    else:
+        errs.add(13)
+    
+    for code in registrations:
+        if registrations[code].is_expired():
+            del registrations[code]
+        
+    return errs, registration
+            
+        
+    
+
 def login_user(u, p):
     errs = ErrorList()
     u = u.lower()
@@ -300,7 +370,6 @@ def create_session_user(data):
     return errs, session
 
 
-
 def get_session(sid, s_key):
     errs = ErrorList()
     if sid not in sessions:
@@ -328,3 +397,11 @@ def check_session_quick(request, level=2):
             return False, session
         else:
             return True, session
+            
+def create_registration(attr):
+    errs = verify_user(attr)
+    if errs.any():
+        return errs, None
+    else:
+        return errs, Registration.create_new(attr["email"], attr["level"], attr["expiry"])
+        

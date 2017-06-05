@@ -299,20 +299,66 @@ def register():
         return resp
         
         
-@app.route("/admin/user-list")
-def user_list():
-    user_index = r.smembers("user_index")
-    users = {}
-    for username in user_index:
-        user = sess.User.from_existing(username)
-        users[username] = dict(user.get_all())
-        users[username]["_online"] = "No"
-        for key, session in sess.sessions.iteritems():
-            if session.get_user().get_name() == username:
-                users[username]["_online"] = "Yes"
-                break
+@app.route("/admin/user-manager", methods=['GET', 'POST'])
+def user_manager():
+    def format_user_list():
+        user_index = r.smembers("user_index")
+        users = {}
+        for username in user_index:
+            user = sess.User.from_existing(username)
+            users[username] = dict(user.get_all())
+            users[username]["_online"] = "No"
+            for key, session in sess.sessions.iteritems():
+                if session.get_user(passive=True).get_name() == username:
+                    users[username]["_online"] = "Yes"
+                    break
+                
+        return users
+                
+    if request.method == "GET":
+        return render_template("admin/user-list.html", users=format_user_list(), user_name="thezperk")
+    else:
+        success, session = sess.check_session_quick(request)
         
-    return render_template("admin/user-list.html", users=users, user_name="thezperk")
+        if not success:
+            return redirect(url_for("login", redirect="/admin/user-manager"))
+        
+        user = session.get_user()
+        
+        
+        if user.get_level() > int(request.form.get("level")):
+            return render_template("admin/user-list.html", 
+                users=format_user_list(), 
+                user_name=user.get_name(),
+                errors=["You cannot create users at a greater level than you"]
+            )
+        
+        data = { key:request.form[key] for key in request.form }
+        if data.get("time-unit") == "m":
+            print data["expiry"]
+            data["expiry"] = float(data["expiry"]) * 60
+        else:
+            data["expiry"] = float(data["expiry"]) * 60 * 60
+            
+        
+        errs, registration = sess.create_registration(data)
+        
+        if errs.any():
+            return render_template("admin/user-list.html", 
+                users=format_user_list(), 
+                user_name=user.get_name(),
+                errors=errs.get_formatted()
+            )
+        
+        print registration.get_reg_code()
+        
+        return render_template("admin/user-list.html", 
+            users=format_user_list(), 
+            user_name=user.get_name(),
+            errors=[]
+        )
+        
+        
     
 
 @app.route("/admin/user/<name>")
