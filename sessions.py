@@ -6,21 +6,31 @@ import os
 import re
 
 error_codes = {
-    0: "No Error",
-    1: "User already exists",
-    2: "Session does not exist",
-    3: "Invalid session code",
-    4: "Passwords do not match",
-    5: "Must be a valid email",
-    6: "Password must be at least 8 characters",
-    7: "User does not exist",
-    8: "Incorrect password",
-    9: "Password must contain at least one number"
+     0: "No Error",
+     1: "User already exists",
+     2: "Session does not exist",
+     3: "Invalid session code",
+     4: "Passwords do not match",
+     5: "Must be a valid email",
+     6: "Password must be at least 8 characters",
+     7: "User does not exist",
+     8: "Incorrect password",
+     9: "Password must contain at least one number",
+    10: "Username cannot contain spaces",
+    11: "Username can be up to 20 characters"
 }
+
+user_attributes = [
+    "first-name",
+    "last-name",
+    "email"
+]
 
 SECRET_KEY_SHHHH = "#85)yc5*u%w2eppddrgk6muu5#i8x+*ljfm9l(kkhysqfu^bex_prostate_cancer"
 
 sessions = {}
+registrations = {}
+
 _db = None
 
 def init(database):
@@ -73,22 +83,47 @@ class Session(object):
             
             
         return i
+        
+        
+class UserTemplate(object):
+    def __init__(self, email, level, expiration):
+        self._email = email
+        self._level = level
+        self._expiration = expiration
 
 
 class User(object):
     def __init__(self, name, data={}):
-        data["access-level"] = 0
+        data["access-level"] = 2
+        for key in user_attributes:
+            if key not in data:
+                data[key] = ""
+                
+        print data
+                
         self._data = data
         self._name = name
         
-    def get(self, key):
-        return self._data[key]
+    def get(self, key, default=""):
+        val = ""
+        try:
+            val = self._data[key]
+        except:
+            val = default
+        
+        if val == "":
+            val = default
+            
+        return val
         
     def get_all(self):
         return self._data
     
     def set(self, key, data):
         self._data[key] = data
+        
+    def get_level(self):
+        return self.get("access-level", 2)
         
     def get_email(self):
         return self.get("email")
@@ -97,10 +132,12 @@ class User(object):
         return self._name
         
     def pull_data(self):
-        self._data = _db.hgetall("users" + self._name)
-        
+        remote = _db.hgetall("users:" + self._name)
+        for key in remote:
+            self._data[key] = remote[key]
+
     def push_data(self):
-        _db.hmset("users" + self._name, self._data)
+        _db.hmset("users:" + self._name, self._data)
         
     @classmethod
     def create_new(cls, data):
@@ -179,7 +216,7 @@ def update_user(session, data):
             salt, pw = User._hash_password(data["password"])
             session.get_user().set("password", pw)
             session.get_user().set("salt", salt)
-        elif item != "confirm":   
+        elif item in user_attributes:   
             session.get_user().set(item, data[item])
     
     session.get_user().push_data()
@@ -213,6 +250,13 @@ def verify_user(data):
         u = data["username"].lower()
         if _db.sismember("user_index", u):
             errs.add(1)
+            
+        if len(u) > 20:
+            errs.add(11)
+            
+        if " " in u:
+            errs.add(10)
+            
         
     return errs
 
@@ -271,12 +315,16 @@ def get_session(sid, s_key):
     return errs, session
     
 
-def check_session_quick(request):
+def check_session_quick(request, level=2):
     sid = int(request.cookies.get("s_id", "-1"))
     s_key = request.cookies.get("s_key", "")
     errs, session = get_session(sid, s_key)
-    
+
     if errs.any():
         return False, None
     else:
-        return True, session
+        user_level = session.get_user().get_level()
+        if user_level < level:
+            return False, session
+        else:
+            return True, session

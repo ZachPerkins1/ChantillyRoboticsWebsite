@@ -2,11 +2,29 @@
 <html>
     <head>
         <title>Admin - {{ page_display }}</title>
+        <style>
+            body {
+            	font-family: sans-serif;
+            }
+            
+            #menu {
+                text-align: left;
+            }
+            
+            .user-seperator {
+                width: 200px;
+                border-top: 1px solid #8c8b8b;
+            }
+        </style>
         {% block head %}
         {% endblock %}
     </head>
     <body>
-        <a href="{{ url_for('logout') }}">Log Out</a>  |  <a href="{{ url_for('admin_home') }}">Home</a>
+        <div id="menu">
+            Logged in as: <b>{{ user_name }}</b><br/>
+            <hr class="user-seperator" align="left"/>
+            <a href="{{ url_for('logout') }}">Log Out</a>  |  <a href="{{ url_for('admin_home') }}">Home</a>
+        </div>
         {% block content %}
         {% endblock %}
     </body>

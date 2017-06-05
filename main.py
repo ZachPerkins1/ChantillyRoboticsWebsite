@@ -7,7 +7,7 @@ import flask
 import os
 from datatypes import add_tags
 
-from flask import Flask, render_template, request, jsonify, make_response, redirect
+from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
 
 import data_manager as dmanager
 import image_manager as imanager
@@ -19,7 +19,6 @@ app = Flask(__name__)
 r = redis.StrictRedis(host="barreleye.redistogo.com", port=11422, db=0, password="8fb344199bbb94235135457306928ef0")
 previews = {}
 
-app.config['SECRET_KEY'] = "hard to guess string"
 app.config['UPLOAD_FOLDER'] = "static/usr_img/"
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
@@ -34,8 +33,10 @@ add_tags()
 
 @app.route("/admin/edit-page/<page>")
 def edit_page(page):
-    if not sess.check_session_quick(request)[0]:
-        return redirect("/admin/login")
+    success, session = sess.check_session_quick(request)
+    
+    if not success:
+        return redirect(url_for("login", redirect="/admin/edit-page/" + page))
         
     """Generates and returns an "edit page" page for the given page.
         Admins use these pages to add content to the website.
@@ -66,7 +67,7 @@ def edit_page(page):
         "list_elements": lists
     }
     
-    return render_template("admin/edit-page.html", data=page_data)
+    return render_template("admin/edit-page.html", data=page_data, user_name=session.get_user().get_name())
     
 @app.route("/admin/save-data", methods=['POST'])
 def save():
@@ -157,7 +158,7 @@ def rm_preview():
 @app.route("/admin/preview/<int:uid>")
 def preview(uid):
     if not sess.check_session_quick(request)[0]:
-        return redirect("/admin/login")
+        return redirect(url_for("login", redirect="/admin/preview/" + str(uid)))
         
     try:
         path = previews[uid]["page"]
@@ -206,6 +207,10 @@ def default(path):
         
     else:
         return render_template("blocks/not-found.html"), 404
+        
+@app.route("/admin")
+def admin():
+    return redirect("/admin/home")
 
 
 @app.route("/admin/upload-image", methods=['POST'])
@@ -227,7 +232,7 @@ def admin_home():
         
     pages = r.smembers("page_index")
     
-    return render_template("admin/home.html", pages=pages, name=session.get_user().get("first-name"), user_data=session.get_user().get_all())
+    return render_template("admin/home.html", pages=pages, name=session.get_user().get("first-name"), user_data=session.get_user().get_all(), user_name=session.get_user().get_name())
     
 
 @app.route("/admin/edit-user", methods=['POST'])
@@ -251,6 +256,8 @@ def logout():
         
 @app.route("/admin/login", methods=['GET', 'POST'])
 def login():
+    re = request.args.get("redirect", "/admin/home")
+    
     if request.method == 'GET':
         if sess.check_session_quick(request)[0]:
             return redirect("/admin/home")
@@ -266,7 +273,7 @@ def login():
         if errs.any():
             resp = make_response(render_template("admin/login.html", errors=errs.get_formatted(), cached_data=request.form))
         else:
-            resp = make_response(redirect("admin/home"))
+            resp = make_response(redirect(re))
             resp.set_cookie("s_id", str(session.get_id()))
             resp.set_cookie("s_key", session.get_key())
     
@@ -290,7 +297,32 @@ def register():
             resp.set_cookie("s_key", session.get_key())
             
         return resp
+        
+        
+@app.route("/admin/user-list")
+def user_list():
+    user_index = r.smembers("user_index")
+    users = {}
+    for username in user_index:
+        user = sess.User.from_existing(username)
+        users[username] = dict(user.get_all())
+        users[username]["_online"] = "No"
+        for key, session in sess.sessions.iteritems():
+            if session.get_user().get_name() == username:
+                users[username]["_online"] = "Yes"
+                break
+        
+    return render_template("admin/user-list.html", users=users, user_name="thezperk")
     
+
+@app.route("/admin/user/<name>")
+def user(name):
+    pass
+        
+        
+@app.route("/admin/helen")
+def helen():
+    return "This webpage is plain, boring, and goes unoticed just like <a href='https://instagram.com/woshixiaoqing'>Helen</a>."
 
 
 print "Server Starting..."

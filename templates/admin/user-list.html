@@ -1,0 +1,176 @@
+{% extends "admin/admin-template.html" %}
+{% set page_display = "Home" %}
+{% block head %}
+
+
+<script>
+function inputFocus(i) {
+    if(i.value==i.defaultValue) { 
+        i.value=""; 
+        i.style.color="#000";
+    }
+}
+function inputBlur(i) {
+    if (i.value == "") {
+        i.value=i.defaultValue; 
+        i.style.color="#888";
+    }
+}
+
+function searchColumn(col, text) {
+    text = text.toLowerCase()
+    table = document.getElementById("user-table");
+    rows = table.getElementsByTagName("tr");
+    for (var i = 0; i < rows.length; i++) {
+       column = rows[i].getElementsByTagName("td")[col];
+       if (column.innerHTML.toLowerCase().indexOf(text) == -1) {
+            rows[i].style.display = "none";
+       } else {
+            rows[i].style.display = "";
+       }
+    }   
+}
+
+function resetTable() {
+    searchColumn(0, "");
+}
+
+function resizeTable() {
+    var users = document.getElementById("user-table");
+    var heading = document.getElementById("heading-table");
+    users.style.width = window.innerWidth.toString() + "px";
+    heading.style.width = window.innerWidth.toString() + "px";
+    
+}
+    
+function resizeContent() {
+    scrollable = document.getElementById("scrollable");
+    unscrollable = document.getElementById("unscrollable");
+    menu = document.getElementById("menu");
+    scrollable.style.height = (window.innerHeight - unscrollable.offsetHeight - menu.offsetHeight - 76).toString() + "px";
+    console.log(scrollable.style.height);
+}
+
+window.onload = function() {
+    resizeTable();
+    resizeContent();
+}
+
+window.onresize = function() {
+    resizeTable();
+    resizeContent();
+}
+
+</script>
+
+<style>
+    body,html {
+        height: 100%;
+    }
+    
+    body {
+        text-align: center;
+        overflow: hidden;
+    }
+    table {
+        text-align: center;
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 3000px;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: gray;
+    }
+
+    thead tr:nth-child(1) {
+        font-weight: bold;
+        height: 20px;
+    }
+
+    .search-bar {
+        margin-bottom: 7px;
+        text-align: center;
+    }
+
+    #scrollable {
+        position: relative;
+        bottom: 0;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+
+    td, th {
+        width: 33%;
+    }
+
+    tr {
+        height: 30px;
+    }
+
+    #register input {
+
+    }
+
+    #register-form {
+        background-color: lightgray;
+        padding-bottom: 10px;
+        padding-top: 1px;
+    }
+</style>
+
+{% endblock %}
+{% block content %}
+
+<h2>User Manager</h2>
+<div id="unscrollable">
+    <form id="register-form">
+        <h3>Register new user</h3>
+        Email: <input type="email"/>
+        Level: 
+        <select name="level">
+            <option value="0">Developer</option> 
+            <option value="1">Super Admin</option>
+            <option value="2" selected>Admin</option>
+        </select>
+        Offer Expiration:
+        <input type="number" name="expires" value="20" style="width: 40px">
+        <select name="time-unit">
+            <option value="m" selected>Minutes</option>
+            <option value="h">Hours</option>
+        </select>
+        <input type="submit" value="Add">
+    </form>
+    
+    <h3>Current Users</h3>
+    
+    <table id="heading-table">
+        <thead>
+            <tr>
+                <td>Username</td>
+                <td>Email</td>
+                <td>Online?</td>
+            </tr>
+            <tr class="search-bar">
+                <td><input type="text" value="Search" class="search-bar" onfocus="inputFocus(this); searchColumn(0, this.value);" oninput="searchColumn(0, this.value)" onblur="inputBlur(this);" style="color:#888;"></td>
+                <td><input type="text" value="Search" class="search-bar" onfocus="inputFocus(this); searchColumn(1, this.value);" oninput="searchColumn(1, this.value)" onblur="inputBlur(this);" style="color:#888;"></td>
+                <td></td>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div id="scrollable">
+    <table id="user-table">
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td><a href="{{ url_for('user', name=user) }}">{{ user }}</a></td>
+                <td><a href="mailto:{{ users[user]['email'] }}">{{ users[user]['email'] }}</a></td>
+                <td>{{ users[user]['_online'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
