@@ -54,6 +54,7 @@ class Session(object):
     def get_user(self, passive=False):
         if not passive:
             self._set_timestamp()
+        self._user.pull_data()
         return self._user
     
     def get_key(self, passive=False):
@@ -95,8 +96,7 @@ class Session(object):
         i = 0
         while i in sessions:
             i += 1
-            
-            
+        
         return i
         
         
@@ -139,7 +139,6 @@ class Registration(object):
 
 class User(object):
     def __init__(self, name, data={}):
-        data["access-level"] = 2
         for key in user_attributes:
             if key not in data:
                 data[key] = ""
@@ -166,7 +165,7 @@ class User(object):
         self._data[key] = data
         
     def get_level(self):
-        return self.get("access-level", 2)
+        return int(self.get("access-level", 2))
         
     def get_email(self):
         return self.get("email")
@@ -239,18 +238,19 @@ def gen_rand(bytes):
 
 
 def create_user(data):
-    errs = verify_user(data)
+    t_data = { key:data[key] for key in data }
+    errs = verify_user(t_data)
     if errs.any():
         return errs, None
     else:
-        errs, registration = get_registration(data["reg_code"])
+        errs, registration = get_registration(t_data["reg-code"])
         if errs.any():
             return errs, None
              
-        data["access-level"] = registration.get_level()
-        data["email"] = registration.get_email()
+        t_data["access-level"] = registration.get_level()
+        t_data["email"] = registration.get_email()
         
-        user = User.create_new(data)
+        user = User.create_new(t_data)
         return errs, user
     
     return errs, user
@@ -258,18 +258,19 @@ def create_user(data):
 
 def update_user(session, data):
     errs = verify_user(data)
+    user = session.get_user()
     if errs.any():
         return errs
     
     for item in data:
         if item == "password":
             salt, pw = User._hash_password(data["password"])
-            session.get_user().set("password", pw)
-            session.get_user().set("salt", salt)
+            user.set("password", pw)
+            user.set("salt", salt)
         elif item in user_attributes:   
-            session.get_user().set(item, data[item])
+            user.set(item, data[item])
     
-    session.get_user().push_data()
+    user.push_data()
     
     return errs
 
@@ -393,7 +394,7 @@ def check_session_quick(request, level=2):
         return False, None
     else:
         user_level = session.get_user().get_level()
-        if user_level < level:
+        if user_level > level:
             return False, session
         else:
             return True, session

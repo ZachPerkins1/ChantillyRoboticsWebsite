@@ -13,10 +13,6 @@
                         <td><input type="text" name="username" value="{{ cached_data['username'] if cached_data }}" required/></td>
                     </tr>
                     <tr>
-                        <td class="required">Email:</td>
-                        <td><input type="text" name="email" value="{{ cached_data['email'] if cached_data }}" required/></td>
-                    </tr>
-                    <tr>
                         <td class="required">Password:</td>
                         <td><input type="password" name="password" required/></td>
                     </tr>
@@ -33,7 +29,7 @@
                         <td><input type="text" name="last-name" value="{{ cached_data['last-name'] if cached_data }}"/></td>
                     </tr>
                 </table>
-                <input type="hidden" name="reg-code" value="lmao"/>
+                <input type="hidden" name="reg-code" value="{{ reg_code }}"/>
                 <input type="submit" value="Register"/>
             </form>
             

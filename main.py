@@ -231,8 +231,9 @@ def admin_home():
         return redirect("/admin/login")
         
     pages = r.smembers("page_index")
+    user = session.get_user()
     
-    return render_template("admin/home.html", pages=pages, name=session.get_user().get("first-name"), user_data=session.get_user().get_all(), user_name=session.get_user().get_name())
+    return render_template("admin/home.html", pages=pages, name=user.get("first-name"), user_data=user.get_all(), user_name=user.get_name(), access_level=user.get_level())
     
 
 @app.route("/admin/edit-user", methods=['POST'])
@@ -283,10 +284,14 @@ def login():
 @app.route("/admin/register", methods=['GET', 'POST'])
 def register():
     if request.method == "GET":
-        return render_template("admin/register.html")
+        code = request.args.get("reg-code", "")
+        if code == "":
+            return redirect("/admin/login")
+            
+        return render_template("admin/register.html", reg_code=code)
     else:
         errs, session = sess.create_session_user(request.form)
-
+        
         resp = None
         
         if errs.any():
@@ -303,10 +308,11 @@ def register():
 def user_manager():
     def format_user_list():
         user_index = r.smembers("user_index")
+        
         users = {}
         for username in user_index:
-            user = sess.User.from_existing(username)
-            users[username] = dict(user.get_all())
+            u = sess.User.from_existing(username)
+            users[username] = dict(u.get_all())
             users[username]["_online"] = "No"
             for key, session in sess.sessions.iteritems():
                 if session.get_user(passive=True).get_name() == username:
@@ -316,9 +322,14 @@ def user_manager():
         return users
                 
     if request.method == "GET":
+        success, session = sess.check_session_quick(request, 1)
+
+        if not success:
+            return redirect(url_for("login", redirect="/admin/user-manager"))
+        
         return render_template("admin/user-list.html", users=format_user_list(), user_name="thezperk")
     else:
-        success, session = sess.check_session_quick(request)
+        success, session = sess.check_session_quick(request, 1)
         
         if not success:
             return redirect(url_for("login", redirect="/admin/user-manager"))
@@ -358,8 +369,6 @@ def user_manager():
             errors=[]
         )
         
-        
-    
 
 @app.route("/admin/user/<name>")
 def user(name):

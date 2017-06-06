@@ -85,6 +85,9 @@
         <li><a href="{{ url_for('edit_page', page=page) }}">{{ page }}</a></li>
     {% endfor %}
     </ul>
+    {% if access_level < 2 %}
+    <a href="{{ url_for('user_manager') }}"><h3>User Manager</h3></a>
+    {% endif %}
     <h3>Settings</h3>
     <form id="settings">
         <table id="login-table">
