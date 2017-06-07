@@ -327,7 +327,7 @@ def user_manager():
         if not success:
             return redirect(url_for("login", redirect="/admin/user-manager"))
         
-        return render_template("admin/user-list.html", users=format_user_list(), user_name="thezperk")
+        return render_template("admin/user-list.html", users=format_user_list(), user_name=session.get_user().get_name())
     else:
         success, session = sess.check_session_quick(request, 1)
         
@@ -372,7 +372,22 @@ def user_manager():
 
 @app.route("/admin/user/<name>")
 def user(name):
-    pass
+    access_text = [
+        "Developer",
+        "Super admin",
+        "Admin"
+    ]
+    
+    success, session = sess.check_session_quick(request, 1)
+    if success:
+        if sess.user_exists(name):
+            curr_user = session.get_user()
+            u = sess.User.from_existing(name)
+            user_data = u.get_all()
+            user_data["_f_access_level"] = access_text[u.get_level()]
+            return render_template("admin/user.html", user_data=u.get_all(), user_name=curr_user.get_name())
+    
+    return render_template("blocks/not-found.html"), 404
         
         
 @app.route("/admin/helen")

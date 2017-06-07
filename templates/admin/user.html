@@ -1,0 +1,146 @@
+{% extends "admin/admin-template.html" %}
+{% set page_display = user_name %}
+{% block head %}
+    <style>
+        td:nth-child(odd) {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .dialogue-option {
+            display: none;
+            padding-bottom: 5px;
+        }
+        
+        #dialogue {
+            display: none;
+            padding-top: 5px;
+        }
+
+    </style>
+    
+    <script>
+        var curr_selected = 0
+    
+        function displayDialogue(id) {
+            clearDisplay();
+            curr_selected = id;
+            
+            var dialogue = document.getElementById("dialogue");
+            var options = dialogue.getElementsByClassName("dialogue-option");
+            var selected = options[id]
+            
+            selected.style.display = "block"
+            dialogue.style.display = "block"
+        }
+        
+        function clearDisplay() {
+            var dialogue = document.getElementById("dialogue");
+            var options = dialogue.getElementsByClassName("dialogue-option");
+            
+            for (var i = 0; i < options.length; i++) {
+                options[i].style.display = "none";
+            }
+            
+            dialogue.style.display = "none";
+            document.getElementById("result-box").innerHTML = ""
+        }
+        
+        function submitDialogue() {
+            if (window.confirm("Are you sure?")) {
+                var resultBox = document.getElementById("result-box");
+                var url = {{ request.script_root|tojson|safe }} + "/admin/";
+                data = {}
+                
+                switch(curr_selected) {
+                    case 0:
+                        url += "del-user"
+                        if ($("input[name='confirm_box']").val().toLowerCase() != "{{ user_data['username'] }}".toLowerCase()) {
+                            resultBox.innerHTML = "Incorrect username";
+                            return;
+                        }
+                        break;
+                    case 1:
+                        url += "suspend-user";
+                        data["time"] = $("input[name='time']").val();
+                        break;
+                    case 2:
+                        url += "change-level";
+                        data["level"] = $("select[name='level']").val();
+                        break;
+    
+                }
+                
+                resultBox.innerHTML = "Saving..."
+                
+                $.ajax({
+                    url: url, 
+                    type: "post", 
+                    data: data, 
+                    dataType: "json",
+                    success: function(data) {
+                        if (data["success"]) {
+                            resultBox.innerHTML = data["error"];
+                        } else {
+                            resultBox.innerHTML = "Success."
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        resultBox.innerHTML = "Error: " + errorThrown + ". Try Again.";
+                    }
+                });
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ user_data['username'] }}:</h1>
+    <h3>Info:</h3>
+    <table>
+        <tr>
+            <td>Email:</td>
+            <td>{{ user_data['email'] }}</td>
+        </tr>
+        <tr>
+            <td>First Name:</td>
+            <td>{{ user_data['first-name'] }}</td>
+        </tr>
+        <tr>
+            <td>Last Name:</td>
+            <td>{{ user_data['last-name'] }}</td>
+        </tr>
+        <tr>
+            <td>Access Level:</td>
+            <td>{{ user_data['_f_access_level'] }}</td>
+        </tr>
+    </table>
+    <h3>Actions:</h3>
+    <button onclick="displayDialogue(0)">Delete User</button>
+    <button onclick="displayDialogue(1)">Suspend User</button>
+    <button onclick="displayDialogue(2)">Change Level</button>
+    <div id="dialogue">
+        <div class="dialogue-option">
+            Are you really sure you want to do this. Type the user's username below if you're sure.<br/>
+            <input type="text" name="confirm_box">
+        </div>
+        <div class="dialogue-option">
+            How much time?<br/>
+            <input type="number" name="time" style="width:40px"> Days
+        </div>
+        <div class="dialogue-option">
+            What is the new level?
+            <select name="level">
+                <option value="0">Developer</option> 
+                <option value="1">Super Admin</option>
+                <option value="2" selected>Admin</option>
+            </select>
+        </div>
+        <button onclick="submitDialogue()">Confirm</button>
+        <button onclick="clearDisplay()">Cancel</button>
+        <div id="result-box">
+            
+        </div>
+    </div>
+    
+{% endblock %}

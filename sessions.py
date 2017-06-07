@@ -312,6 +312,13 @@ def verify_user(data):
     return errs
 
 
+def user_exists(username):
+    return _db.sismember("user_index", username)
+    
+def get_all_users():
+    return _db.smembers("user_index")
+
+
 def get_registration(reg_code):
     errs = ErrorList()
     success, registration = Registration.get(reg_code)
