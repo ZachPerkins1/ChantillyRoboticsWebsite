@@ -388,6 +388,33 @@ def user(name):
             return render_template("admin/user.html", user_data=u.get_all(), user_name=curr_user.get_name())
     
     return render_template("blocks/not-found.html"), 404
+    
+    
+@app.route("/admin/del-user", methods=['POST'])
+def delete_user():
+    success, session = sess.check_session_quick(request, 1)
+    if not success:
+        return jsonify(success=False, error="You do not have permission to perform this action")
+    
+    sess.remove_user(request.form.get("name", ""))
+    
+    return jsonify(success=True)
+    
+@app.route("/admin/suspend-user", methods=['POST'])
+def suspend_user():
+    success, session = sess.check_session_quick(request, 1)
+    if not success:
+        return jsonify(success=False, error="You do not have permission to perform this action")
+        
+    username = request.form.get("name", "")
+    
+    if sess.user_exists(username):
+        user = sess.User.from_existing(username)
+        user.suspend(int(request.form.get("time", 0)))
+        user.push_data()
+        print user.get_all()
+    
+    return jsonify(success=True)
         
         
 @app.route("/admin/helen")

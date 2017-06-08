@@ -51,6 +51,7 @@
                 var resultBox = document.getElementById("result-box");
                 var url = {{ request.script_root|tojson|safe }} + "/admin/";
                 data = {}
+                data["name"] = "{{ user_data['username'] }}"
                 
                 switch(curr_selected) {
                     case 0:
@@ -79,10 +80,10 @@
                     data: data, 
                     dataType: "json",
                     success: function(data) {
-                        if (data["success"]) {
+                        if (!data["success"]) {
                             resultBox.innerHTML = data["error"];
                         } else {
-                            resultBox.innerHTML = "Success."
+                            resultBox.innerHTML = "Success.";
                         }
                     },
                     error: function(xhr, textStatus, errorThrown) {
