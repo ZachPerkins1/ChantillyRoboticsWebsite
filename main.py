@@ -8,6 +8,7 @@ import os
 from datatypes import add_tags
 
 from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
+from flask_mail import Mail, Message
 
 import data_manager as dmanager
 import image_manager as imanager
@@ -23,6 +24,18 @@ app.config['UPLOAD_FOLDER'] = "static/usr_img/"
 
 ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"]
 
+ADDRESS = "http://localhost:8080/"
+EMAIL = "chantillyrobotics.612.org@gmail.com"
+
+# email configuration
+# obviously temporary
+app.config['MAIL_SERVER'] = "smtp.gmail.com"
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = EMAIL
+app.config['MAIL_PASSWORD'] = "Hug2NXLu"
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 app.jinja_env.autoescape = False
 
@@ -367,7 +380,19 @@ def user_manager():
 
         print registration.get_reg_code()
 
-        # send email of url +
+        # send email with link embedded
+        global ADDRESS
+        global EMAIL
+        global mail
+
+        m = Message("User Registration Information", sender = EMAIL, recipients = [data['email']])
+        # TODO: maybe load html from some template?
+        m.html = """<h2>Chantilly Robotics</h2>
+        <p>If you are receiving this email, you have been invited to receive super-user privileges on chantillyrobotics.org</p>
+        <p>Click <a href=\"""" + ADDRESS + "/admin/register?reg-code=" + registration.get_reg_code() + """\">here</a></p>
+        <p>If you believe this to be an error please contact a system administrator</p>
+        """
+        mail.send(m)
 
         return render_template("admin/user-list.html",
             users=format_user_list(),
