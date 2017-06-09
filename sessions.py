@@ -403,8 +403,6 @@ def login_user(u, p):
     return errs, res
 
 
-
-
 # assumes user has already been created
 def create_session(user):
     return ErrorList(), Session.create(user)
