@@ -389,7 +389,7 @@ def user_manager():
         # TODO: maybe load html from some template?
         m.html = """<h2>Chantilly Robotics</h2>
         <p>If you are receiving this email, you have been invited to receive super-user privileges on chantillyrobotics.org</p>
-        <p>Click <a href=\"""" + ADDRESS + "/admin/register?reg-code=" + registration.get_reg_code() + """\">here</a></p>
+        <p>Click <a href=\"""" + ADDRESS + "admin/register?reg-code=" + str(registration.get_reg_code()) + """\">here</a></p>
         <p>If you believe this to be an error please contact a system administrator</p>
         """
         mail.send(m)
