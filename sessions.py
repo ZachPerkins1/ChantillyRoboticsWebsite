@@ -5,6 +5,7 @@ import binascii
 import os
 import re
 import time
+import math
 
 error_codes = {
      0: "No Error",
@@ -20,7 +21,8 @@ error_codes = {
     10: "Username cannot contain spaces",
     11: "Username can be up to 20 characters",
     12: "Registration code is expired",
-    13: "Registration code does not exist"
+    13: "Registration code does not exist", 
+    14: "Your account is currently suspended"
 }
 
 user_attributes = [
@@ -158,8 +160,30 @@ class User(object):
             
         return val
         
+    def is_suspended(self):
+        print int(self.get("suspended", 0))
+        if int(self.get("suspended", 0)):
+            sus_end = float(self.get("suspend-end", 0))
+            curr_time = time.time()
+            if curr_time >= sus_end:
+                self.set("suspended", 0)
+            else:
+                return True
+        
+        return False
+        
+    def suspend(self, days):
+        seconds = days * 60 *60 * 24
+        self.set("suspend-end", time.time() + seconds)
+        self.set("suspended", 1)
+        
+    def suspend_left(self):
+        end = self.get("suspend-end")
+        left = end - time.time()
+        return math.ceil(left / 24 / 60 / 60)
+        
     def get_all(self):
-        return self._data
+        return dict(self._data)
     
     def set(self, key, data):
         self._data[key] = data
@@ -190,6 +214,9 @@ class User(object):
         del t_dict["confirm"]
         t_dict["password"] = p
         t_dict["salt"] = s
+        
+        t_dict["suspended"] = 0
+        t_dict["suspend-end"] = 0
     
         n_user = cls(data["username"].lower(), t_dict)
         n_user.push_data()
@@ -200,6 +227,11 @@ class User(object):
         n_user = cls(user)
         n_user.pull_data()
         return n_user
+    
+    @classmethod
+    def delete(cls, user):
+        _db.srem("user_index", user.lower())
+        return _db.delete("users:" + user.lower())
 
     @classmethod
     def _hash_password(cls, password):
@@ -254,6 +286,10 @@ def create_user(data):
         return errs, user
     
     return errs, user
+    
+
+def remove_user(name):
+    return User.delete(name)
     
 
 def update_user(session, data):
@@ -312,6 +348,13 @@ def verify_user(data):
     return errs
 
 
+def user_exists(username):
+    return _db.sismember("user_index", username)
+    
+def get_all_users():
+    return _db.smembers("user_index")
+
+
 def get_registration(reg_code):
     errs = ErrorList()
     success, registration = Registration.get(reg_code)
@@ -330,8 +373,6 @@ def get_registration(reg_code):
     return errs, registration
             
         
-    
-
 def login_user(u, p):
     errs = ErrorList()
     u = u.lower()
@@ -341,12 +382,18 @@ def login_user(u, p):
         return errs, None
 
     user = User.from_existing(u)
+    print user.get_all()
+    print user.is_suspended()
 
     salt = user.get('salt')
     password = hashlib.sha256(salt + SECRET_KEY_SHHHH + p).hexdigest()
 
     if password != user.get('password'):
         errs.add(8)
+        return errs, None
+        
+    if user.is_suspended():
+        errs.add(14)
         
     if errs.any():
         return errs, None
@@ -405,4 +452,6 @@ def create_registration(attr):
         return errs, None
     else:
         return errs, Registration.create_new(attr["email"], attr["level"], attr["expiry"])
+        
+        
         
