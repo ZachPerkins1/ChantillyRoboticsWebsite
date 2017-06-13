@@ -406,6 +406,15 @@ def login_user(u, p):
 # assumes user has already been created
 def create_session(user):
     return ErrorList(), Session.create(user)
+    
+def remove_session(username):
+    found_sessions = []
+    for session in sessions:
+        if username == sessions[session].get_user().get_name():
+            found_sessions.append(session)
+            
+    for session in found_sessions:
+        del sessions[session]
 
 def create_session_user(data):
     errs, user = create_user(data)
