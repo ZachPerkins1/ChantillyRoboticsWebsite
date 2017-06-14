@@ -1,0 +1,38 @@
+body {
+    text-align: center;
+}
+
+td {
+    vertical-align: middle;
+    padding: 2px;
+}
+
+#login-table td:nth-child(1) {
+    text-align: right;
+}
+
+#login-table input {
+    padding: 2px;
+    border: 1px solid #696b6d;
+}
+
+#login-table {
+    margin-bottom: 14px;
+}
+
+#login {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#errors {
+    text-align: left;
+    color: red;
+}
+
+.required {
+    font-weight: bold;
+}

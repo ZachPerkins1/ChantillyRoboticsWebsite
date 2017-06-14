@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "admin/admin-template.html" %}
+{% set page_display = "Edit '" + data['page_name'] + "'" %}
+{% block head %}
     <meta charset="UTF-8">
     <title>Page Editor</title>
     <style>
@@ -44,7 +44,6 @@
     {% macro jsescape(str) -%}
         {{ str|replace('\"', '\\\"')|replace('\n', '\\n')|replace('\r', '\\r') }}
     {%- endmacro %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
@@ -83,8 +82,10 @@
     <script type="text/javascript" src="{{ url_for("static", filename="js/admin/item-handler.js") }}"></script>
     <script type="text/javascript" src="{{ url_for("static", filename="js/admin/list-loader.js") }}"></script>
     <script type="text/javascript" src="{{ url_for("static", filename="js/admin/page-loader.js") }}"></script>
-</head>
-<body onload="init()">
+{% endblock %}
+
+
+{% block content %}
     <h1>{{ data['page_name'] }}</h1>
     {% for type in data['type_info'] %}
         {% if data['static_elements'][type]|length > 0 %}
@@ -103,5 +104,4 @@
         <button onclick="pageLoader.save()">Save</button>
         <button onclick="pageLoader.genPreview()">View Preview</button>
         <div id="message-box"></div>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "admin/admin-template.html" %}
+{% set page_display = "Home" %}
+{% block head %}
+    <title>Home</title>
+    <style type="text/css">
+        td {
+            text-align: right;
+        }
+        
+        .heading {
+            text-align: left;
+        }
+        
+        .errors {
+            color: red;
+            text-align: left;
+        }
+    </style>
+    
+    <script>
+        var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                input = document.activeElement;
+                if (input.tagName.toLowerCase() == "input") {
+                    submitPartial(input.className);
+                }
+            }
+        });
+        
+        function submitPartial(name) {
+            var formData = {}
+            var items = document.getElementsByClassName(name);
+            var button = items[items.length - 2];
+            var errors = items[items.length - 1];
+            
+            button.disabled = true;
+            button.innerHTML = "Updating...";
+
+            for (var i = 0; i < items.length - 2; i++) {
+                var item_name = items[i].getAttribute("name");            
+                var item_value = items[i].value;
+                formData[item_name] = item_value;
+            }
+            
+            $.ajax({
+                url: $SCRIPT_ROOT + "/admin/edit-user", 
+                type: "post", 
+                data: formData, 
+                dataType:"json",
+                success: function(data) {
+                    button.disabled = false;
+                    button.innerHTML = "Update";
+                    errors.innerHTML = "";
+                    
+                    for (var i = 0; i < data["errors"].length; i++) {
+                        item = document.createElement("li");
+                        item.innerHTML = data["errors"][i];
+                        errors.appendChild(item);
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    button.disabled = false;
+                    button.innerHTML = "Update";
+                    
+                    errors.innerHTML = "";
+                    item = document.createElement("li");
+                    item.innerHTML = "Error: " + errorThrown + ". Try Again.";
+                    errors.appendChild(item);
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Hello, {{ name }}!</h1>
+    <h3>Edit a page:</h3>
+    <ul>
+    {% for page in pages %}
+        <li><a href="{{ url_for('edit_page', page=page) }}">{{ page }}</a></li>
+    {% endfor %}
+    </ul>
+    {% if access_level < 2 %}
+    <a href="{{ url_for('user_manager') }}"><h3>User Manager</h3></a>
+    {% endif %}
+    <h3>Settings</h3>
+    <form id="settings">
+        <table id="login-table">
+            <tr><td class="heading"><b>Password:</b></td></tr>
+                <tr>
+                    <td class="required">Password:</td>
+                    <td><input type="password" name="password" class="password" required/></td>
+                </tr>
+                <tr>
+                    <td class="required">Confirm Password:</td>
+                    <td><input type="password" name="confirm" class="password" required/></td>
+                </tr>
+            <tr><td></td><td><button type="button" class="password" onclick="submitPartial('password')">Update</button></td></tr>
+            <tr><td colspan="2"><ul class="errors password"></ul></td></tr>
+            <tr><td class="heading"><b>Email:</b></td></tr>
+                <tr>
+                    <td>Email:</td>
+                    <td><input type="text" name="email" class="email" value="{{ user_data['email'] }}" required/></td>
+                </tr>
+            <tr><td></td><td><button type="button" class="email" onclick="submitPartial('email')">Update</button></td></tr>
+            <tr><td colspan="2"><ul class="errors email"></ul></td></tr>
+            <tr><td class="heading"><b>Name:</b></td></tr>
+                <tr>
+                    <td>First Name:</td>
+                    <td><input type="text" name="first-name" class="name" value="{{ user_data['first-name'] }}" required/></td>
+                </tr>
+                <tr>
+                    <td>Last Name:</td>
+                    <td><input type="text" name="last-name" class="name" value="{{ user_data['last-name'] }}" required/></td>
+                </tr> 
+                <ul class="errors" class="name"></ul>
+            <tr><td></td><td><button type="button" class="name" onclick="submitPartial('name')">Update</button></td></tr>
+            <tr><td colspan="2"><ul class="errors name"></ul></td></tr>
+        </table>
+    </form>
+    
+{% endblock %}
