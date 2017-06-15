@@ -271,23 +271,20 @@ def gen_rand(bytes):
 
 def create_user(data):
     t_data = { key:data[key] for key in data }
+    
+    errs, registration = get_registration(t_data["reg-code"])
+    if errs.any():
+        return errs, None
+    
     errs = verify_user(t_data)
     if errs.any():
-        print "there are errors you fool"
-        print registrations
         return errs, None
     else:
-        print "test"
-        print registrations
-        errs, registration = get_registration(t_data["reg-code"])
-        if errs.any():
-            return errs, None
-             
         t_data["access-level"] = registration.get_level()
         t_data["email"] = registration.get_email()
         
         user = User.create_new(t_data)
-        return errs, user
+        delete_expired_registrations()
     
     return errs, user
     
@@ -377,13 +374,20 @@ def get_registration(reg_code):
         
     else:
         errs.add(13)
+        
+    return errs, registration
+        
+
+def delete_expired_registrations():        
+    del_list = []
     
     for code in registrations:
         if registrations[code].is_expired():
-            del registrations[code]
+            del_list.append(code)
+    
+    for code in del_list:
+        del registrations[code]
         
-    return errs, registration
-            
         
 def login_user(u, p):
     errs = ErrorList()
