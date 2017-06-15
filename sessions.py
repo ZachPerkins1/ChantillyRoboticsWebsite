@@ -273,8 +273,12 @@ def create_user(data):
     t_data = { key:data[key] for key in data }
     errs = verify_user(t_data)
     if errs.any():
+        print "there are errors you fool"
+        print registrations
         return errs, None
     else:
+        print "test"
+        print registrations
         errs, registration = get_registration(t_data["reg-code"])
         if errs.any():
             return errs, None
@@ -351,8 +355,16 @@ def verify_user(data):
 def user_exists(username):
     return _db.sismember("user_index", username)
     
-def get_all_users():
+def get_all_usernames():
     return _db.smembers("user_index")
+    
+def get_all_users():
+    users = []
+    names = get_all_usernames()
+    for name in names:
+        users.append(User.from_existing(name))
+        
+    return users
 
 
 def get_registration(reg_code):
