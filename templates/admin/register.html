@@ -1,45 +1,44 @@
-<html>
-    <head>
-        <title>Register</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" type="text/css" />
-    </head>
-    <body>
-        <div id="login">
-            <h2>Administrator Registration</h2>
-            <form method="POST">
-                <table id="login-table">
-                    <tr>
-                        <td class="required">Username:</td>
-                        <td><input type="text" name="username" value="{{ cached_data['username'] if cached_data }}" required/></td>
-                    </tr>
-                    <tr>
-                        <td class="required">Password:</td>
-                        <td><input type="password" name="password" required/></td>
-                    </tr>
-                    <tr>
-                        <td class="required">Confirm Password:</td>
-                        <td><input type="password" name="confirm" required/></td>
-                    </tr> 
-                    <tr>
-                        <td>First Name:</td>
-                        <td><input type="text" name="first-name" value="{{ cached_data['first-name'] if cached_data }}"/></td>
-                    </tr>
-                    <tr>
-                        <td>Last Name:</td>
-                        <td><input type="text" name="last-name" value="{{ cached_data['last-name'] if cached_data }}"/></td>
-                    </tr>
-                </table>
-                <input type="hidden" name="reg-code" value="{{ reg_code }}"/>
-                <input type="submit" value="Register"/>
-            </form>
-            
-            <div id="errors">
-                <ul>
-                    {% for error in errors %}
-                    <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+{% extends "admin/admin-template.html" %}
+{% set page_display = "Register" %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" type="text/css" />
+{% endblock %}
+{% block content %}
+    <div id="login">
+        <h2>Administrator Registration</h2>
+        <form method="POST">
+            <table id="login-table">
+                <tr>
+                    <td class="required">Username:</td>
+                    <td><input type="text" name="username" value="{{ cached_data['username'] if cached_data }}" required/></td>
+                </tr>
+                <tr>
+                    <td class="required">Password:</td>
+                    <td><input type="password" name="password" required/></td>
+                </tr>
+                <tr>
+                    <td class="required">Confirm Password:</td>
+                    <td><input type="password" name="confirm" required/></td>
+                </tr> 
+                <tr>
+                    <td>First Name:</td>
+                    <td><input type="text" name="first-name" value="{{ cached_data['first-name'] if cached_data }}"/></td>
+                </tr>
+                <tr>
+                    <td>Last Name:</td>
+                    <td><input type="text" name="last-name" value="{{ cached_data['last-name'] if cached_data }}"/></td>
+                </tr>
+            </table>
+            <input type="hidden" name="reg-code" value="{{ reg_code }}"/>
+            <input type="submit" value="Register"/>
+        </form>
+        
+        <div id="errors">
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
         </div> 
-    </body>
-</html>
+{% endblock %}

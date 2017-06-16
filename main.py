@@ -292,6 +292,10 @@ def login():
             resp.set_cookie("s_key", session.get_key())
 
     return resp
+    
+@app.route("/admin/forgot-password")
+def retrieve_password():
+    pass
 
 
 @app.route("/admin/register", methods=['GET', 'POST'])

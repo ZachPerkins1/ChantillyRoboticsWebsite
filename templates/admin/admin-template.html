@@ -21,11 +21,14 @@
         {% endblock %}
     </head>
     <body>
+        {% if user_name %}
         <div id="menu">
             Logged in as: <b>{{ user_name }}</b><br/>
             <hr class="user-seperator" align="left"/>
             <a href="{{ url_for('logout') }}">Log Out</a>  |  <a href="{{ url_for('admin_home') }}">Home</a>
         </div>
+        {% endif %}
+        
         {% block content %}
         {% endblock %}
     </body>
