@@ -293,9 +293,35 @@ def login():
 
     return resp
     
-@app.route("/admin/forgot-password")
-def retrieve_password():
-    pass
+@app.route("/admin/reset-password", methods=['GET', 'POST'])
+def reset_password():
+    rd = request.args.get("redirect")
+    
+    if request.method == 'GET':
+        pin = request.args.get("pin", "")
+        if not pin:
+            return render_template("reset-begin.html")
+        else:
+            try:
+                pin = int(pin)
+            except:
+                return render_template("reset-begin.html", errors=["PIN must be a number"])
+            
+            if not sess.reset_pin_exists(pin):
+                return render_template("reset-begin.html", errors=["PIN does not exist"])
+            
+            return render_template("reset-action.html", pin=str(pin))
+    else:
+        pin = request.form.get("pin")
+        password = request.form.get("password")
+        confirm = request.form.get("confirm")
+        errs = sess.reset_password(pin, password, confirm)
+        if errs.any():
+            return render_template("reset-action.html")
+        
+            
+        
+        
 
 
 @app.route("/admin/register", methods=['GET', 'POST'])

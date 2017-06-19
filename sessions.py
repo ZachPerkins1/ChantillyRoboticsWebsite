@@ -6,6 +6,7 @@ import os
 import re
 import time
 import math
+import random
 
 error_codes = {
      0: "No Error",
@@ -22,7 +23,8 @@ error_codes = {
     11: "Username can be up to 20 characters",
     12: "Registration code is expired",
     13: "Registration code does not exist", 
-    14: "Your account is currently suspended"
+    14: "Your account is currently suspended",
+    15: "PIN does not exist"
 }
 
 user_attributes = [
@@ -35,6 +37,7 @@ SECRET_KEY_SHHHH = "#85)yc5*u%w2eppddrgk6muu5#i8x+*ljfm9l(kkhysqfu^bex_prostate_
 
 sessions = {}
 registrations = {}
+reset_pins = {}
 
 _db = None
 
@@ -188,6 +191,11 @@ class User(object):
     def set(self, key, data):
         self._data[key] = data
         
+    def set_password(self, password): 
+        salt, pw = User._hash_password(password)
+        self.set("password", pw)
+        self.set("salt", salt)
+        
     def get_level(self):
         return int(self.get("access-level", 2))
         
@@ -253,6 +261,9 @@ class ErrorList:
     
     def get(self):
         return self._errs
+        
+    def contains(self, code):
+        return code in self._errs
     
     def get_formatted(self):
         f_errs = [error_codes[n] for n in self._errs]
@@ -310,6 +321,26 @@ def update_user(session, data):
     user.push_data()
     
     return errs
+    
+
+def reset_pin_exists(pin):
+    return pin in reset_pins
+
+def gen_reset_pin(username):
+    user = User.from_existing(username)
+    pin = random.randint(0, 999999)
+    reset_pins[pin] = user
+    
+def reset_password(pin, password, confirm):
+    errs = verify_user({"password": password, "confirm": confirm})
+    if errs.any():
+        return errs
+        
+    user = reset_pins[pin]
+    user.set_password(password)
+    
+    return errs
+    
 
 def verify_user(data):
     errs = ErrorList()
@@ -477,6 +508,7 @@ def create_registration(attr):
         return errs, None
     else:
         return errs, Registration.create_new(attr["email"], attr["level"], attr["expiry"])
+        
         
         
         
